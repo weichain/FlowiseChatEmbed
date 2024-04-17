@@ -8,10 +8,19 @@ export type IncomingInput = {
     chatId?: string;
     fileName?: string;
 };
+export type IncomingInputV2 = {
+    text: string;
+    chat_history: MessageType[];
+    uploads?: FileUpload[];
+    overrideConfig?: Record<string, unknown>;
+    socketIOClientId?: string;
+    chatId?: string;
+    fileName?: string;
+};
 export type MessageRequest = {
     chatflowid?: string;
     apiHost?: string;
-    body?: IncomingInput;
+    body?: any;
 };
 export type FeedbackRatingType = 'THUMBS_UP' | 'THUMBS_DOWN';
 export type FeedbackInput = {

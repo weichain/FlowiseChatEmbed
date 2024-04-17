@@ -6,4 +6,6 @@ export const defaultBotProps: BubbleProps = {
   chatflowConfig: undefined,
   theme: undefined,
   observersConfig: undefined,
-};
+  onMintHandler: (input: string) => { return input },
+  isMintButtonDisabled: false
+  } 

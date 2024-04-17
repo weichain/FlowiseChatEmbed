@@ -1,6 +1,6 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
-import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
+import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig, IncomingInputV2 } from '@/queries/sendMessageQuery';
 import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
 import { BotBubble } from './bubbles/BotBubble';
@@ -9,7 +9,6 @@ import { SourceBubble } from './bubbles/SourceBubble';
 import { StarterPromptBubble } from './bubbles/StarterPromptBubble';
 import { BotMessageTheme, TextInputTheme, UserMessageTheme } from '@/features/bubble/types';
 import { Badge } from './Badge';
-import socketIOClient from 'socket.io-client';
 import { Popup } from '@/features/popup';
 import { Avatar } from '@/components/avatars/Avatar';
 import { DeleteButton, SendButton } from '@/components/buttons/SendButton';
@@ -59,6 +58,8 @@ type observerConfigType = (accessor: string | boolean | object | MessageType[]) 
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 
 export type BotProps = {
+  onMintHandler: (input: string) => void;
+  isMintButtonDisabled: boolean;
   chatflowid: string;
   apiHost?: string;
   chatflowConfig?: Record<string, unknown>;
@@ -168,6 +169,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   let botContainer: HTMLDivElement | undefined;
 
   const [userInput, setUserInput] = createSignal('');
+  const [path, setPath] = createSignal('interact-with-llm');
   const [loading, setLoading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
@@ -188,7 +190,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
 
   // drag & drop file input
-  // TODO: fix this type
   const [previews, setPreviews] = createSignal<FilePreview[]>([]);
 
   // audio recording
@@ -232,9 +233,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   };
 
-  /**
-   * Add each chat message into localStorage
-   */
+  
   const addChatMessage = (allMessage: MessageType[]) => {
     localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: chatId(), chatHistory: allMessage }));
   };
@@ -247,6 +246,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         return item;
       });
+      
       addChatMessage(updated);
       return [...updated];
     });
@@ -322,32 +322,45 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return messages;
     });
 
-    const body: IncomingInput = {
-      question: value,
-      history: messageList,
-      chatId: chatId(),
-    };
+    let body: any;
+
+    if (value.startsWith('/generate')) {
+      setPath('generate-image ');
+      body = {
+        prompt: value,
+      };
+    } else {
+      body = {
+        text: value,
+        chat_history: [],
+      };
+    }
 
     if (urls && urls.length > 0) body.uploads = urls;
 
     if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
 
-    if (isChatFlowAvailableToStream()) {
-      body.socketIOClientId = socketIOClientId();
-    } else {
-      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    }
+    setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
 
     const result = await sendMessageQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
+      apiHost: path(),
       body,
     });
 
-    if (result.data) {
+    if(result.data?.image_html) {
+      const image = result.data?.image_html;
+      updateLastMessage(image, uuidv4());
+      setUserInput('');
+      setLoading(false);
+      scrollToBottom();
+    }
+
+    if (result.data?.response) {
       const data = result.data;
-      const question = data.question;
-      if (value === '' && question) {
+
+      const question = data.response;
+      
+      if (value === '' && question) { 
         setMessages((data) => {
           const messages = data.map((item, i) => {
             if (i === data.length - 2) {
@@ -380,13 +393,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       if (!isChatFlowAvailableToStream()) {
         let text = '';
-        if (data.text) text = data.text;
+        if (data.response) text = data.response;
         else if (data.json) text = JSON.stringify(data.json, null, 2);
         else text = JSON.stringify(data, null, 2);
 
         updateLastMessage(text, data?.chatMessageId, data?.sourceDocuments, data?.fileAnnotations);
       } else {
-        updateLastMessage('', data?.chatMessageId, data?.sourceDocuments, data?.fileAnnotations);
+        updateLastMessage(question, data?.chatMessageId, data?.sourceDocuments, data?.fileAnnotations);
       }
       setLoading(false);
       setUserInput('');
@@ -444,6 +457,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
         return chatHistory;
       });
+
       setMessages([...loadedMessages]);
     }
 
@@ -481,20 +495,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
     }
 
-    const socket = socketIOClient(props.apiHost as string);
-
-    socket.on('connect', () => {
-      setSocketIOClientId(socket.id);
-    });
-
-    socket.on('start', () => {
-      setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
-    });
-
-    socket.on('sourceDocuments', updateLastMessageSourceDocuments);
-
-    socket.on('token', updateLastMessage);
-
     // eslint-disable-next-line solid/reactivity
     return () => {
       setUserInput('');
@@ -505,10 +505,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           type: 'apiMessage',
         },
       ]);
-      if (socket) {
-        socket.disconnect();
-        setSocketIOClientId('');
-      }
     };
   });
 
@@ -734,7 +730,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setPreviews([]);
       };
     }),
-  );
+  );    
 
   return (
     <>
@@ -827,6 +823,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     )}
                     {message.type === 'apiMessage' && (
                       <BotBubble
+                        isMintButtonDisabled={props.isMintButtonDisabled}
+                        onMintHandler={props.onMintHandler}
                         message={message}
                         fileAnnotations={message.fileAnnotations}
                         chatflowid={props.chatflowid}

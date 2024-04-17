@@ -11,6 +11,8 @@ type Props = {
     textColor?: string;
     chatFeedbackStatus?: boolean;
     fontSize?: number;
+    onMintHandler?: (input: string) => void;
+    isMintButtonDisabled: boolean;
 };
 export declare const BotBubble: (props: Props) => import("solid-js").JSX.Element;
 export {};

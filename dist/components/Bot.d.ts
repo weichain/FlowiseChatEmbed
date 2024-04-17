@@ -32,6 +32,8 @@ export type MessageType = {
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 export type BotProps = {
+    onMintHandler: (input: string) => void;
+    isMintButtonDisabled: boolean;
     chatflowid: string;
     apiHost?: string;
     chatflowConfig?: Record<string, unknown>;
