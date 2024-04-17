@@ -63,6 +63,7 @@ export type BotProps = {
   isMintButtonDisabled: boolean;
   chatflowid: string;
   apiHost?: string;
+  chatBotBEUrl: string;
   chatflowConfig?: Record<string, unknown>;
   welcomeMessage?: string;
   botMessage?: BotMessageTheme;
@@ -346,6 +347,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       apiHost: path(),
       body,
       authToken: props.authToken,
+      chatBotBEUrl: props.chatBotBEUrl,
     });
 
     if (result.data?.image_html) {

@@ -10,5 +10,6 @@ export const defaultBotProps: BubbleProps = {
     return input;
   },
   isMintButtonDisabled: false,
-  authToken: ''
+  authToken: '',
+  chatBotBEUrl: ''
 };

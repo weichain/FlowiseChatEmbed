@@ -40,6 +40,7 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
           }}
         >
           <Bot
+            chatBotBEUrl={props.chatBotBEUrl}
             authToken={props.authToken}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}
