@@ -58,6 +58,7 @@ type observerConfigType = (accessor: string | boolean | object | MessageType[]) 
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 
 export type BotProps = {
+  authToken: string;
   onMintHandler: (input: string) => void;
   isMintButtonDisabled: boolean;
   chatflowid: string;
@@ -344,6 +345,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendMessageQuery({
       apiHost: path(),
       body,
+      authToken: props.authToken,
     });
 
     if (result.data?.image_html) {

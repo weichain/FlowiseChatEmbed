@@ -27,7 +27,7 @@ export type MessageRequest = {
   chatflowid?: string;
   apiHost?: string;
   body?: any;
-  authToken: string
+  authToken?: string;
 };
 
 export type FeedbackRatingType = 'THUMBS_UP' | 'THUMBS_DOWN';
