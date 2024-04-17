@@ -22,6 +22,7 @@ export type MessageRequest = {
     apiHost?: string;
     body?: any;
     authToken?: string;
+    chatBotBEUrl?: string;
 };
 export type FeedbackRatingType = 'THUMBS_UP' | 'THUMBS_DOWN';
 export type FeedbackInput = {
@@ -48,7 +49,7 @@ export declare const updateFeedbackQuery: ({ id, apiHost, body }: UpdateFeedback
     data?: unknown;
     error?: Error | undefined;
 }>;
-export declare const sendMessageQuery: ({ chatflowid, apiHost, body, authToken }: MessageRequest) => Promise<{
+export declare const sendMessageQuery: ({ chatflowid, apiHost, body, authToken, chatBotBEUrl }: MessageRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;

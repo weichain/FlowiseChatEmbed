@@ -56,6 +56,7 @@ export const Bubble = (props: BubbleProps) => {
       >
         <Show when={isBotStarted()}>
           <Bot
+            chatBotBEUrl={props.chatBotBEUrl}
             authToken={props.authToken}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}

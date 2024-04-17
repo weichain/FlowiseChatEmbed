@@ -37,6 +37,7 @@ export type BotProps = {
     isMintButtonDisabled: boolean;
     chatflowid: string;
     apiHost?: string;
+    chatBotBEUrl: string;
     chatflowConfig?: Record<string, unknown>;
     welcomeMessage?: string;
     botMessage?: BotMessageTheme;
