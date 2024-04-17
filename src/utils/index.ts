@@ -13,6 +13,7 @@ export const sendRequest = async <ResponseData>(
         method: string;
         body?: Record<string, unknown> | FormData;
         type?: string;
+        authToken?: string;
       }
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
@@ -25,6 +26,7 @@ export const sendRequest = async <ResponseData>(
         typeof params !== 'string' && isDefined(params.body)
           ? {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${params.authToken}`,
             }
           : undefined,
       body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
@@ -38,6 +40,7 @@ export const sendRequest = async <ResponseData>(
     } else {
       data = await response.text();
     }
+
     if (!response.ok) {
       let errorMessage;
 

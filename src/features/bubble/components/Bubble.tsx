@@ -56,6 +56,9 @@ export const Bubble = (props: BubbleProps) => {
       >
         <Show when={isBotStarted()}>
           <Bot
+            authToken={props.authToken}
+            isMintButtonDisabled={props.isMintButtonDisabled}
+            onMintHandler={props.onMintHandler}
             badgeBackgroundColor={bubbleProps.theme?.chatWindow?.backgroundColor}
             bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
             bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}

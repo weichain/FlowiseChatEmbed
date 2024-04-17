@@ -18,6 +18,8 @@ type Props = {
   textColor?: string;
   chatFeedbackStatus?: boolean;
   fontSize?: number;
+  onMintHandler?: (input: string) => void;
+  isMintButtonDisabled: boolean;
 };
 
 const defaultBackgroundColor = '#f7f8ff';
@@ -27,7 +29,7 @@ const defaultFontSize = 16;
 Marked.setOptions({ isNoP: true });
 
 export const BotBubble = (props: Props) => {
-  let botMessageEl: HTMLDivElement | undefined;
+  let botMessageEl: any;
   const [rating, setRating] = createSignal('');
   const [feedbackId, setFeedbackId] = createSignal('');
   const [showFeedbackContentDialog, setShowFeedbackContentModal] = createSignal(false);
@@ -36,7 +38,7 @@ export const BotBubble = (props: Props) => {
     try {
       const response = await sendFileDownloadQuery({
         apiHost: props.apiHost,
-        body: { question: '', history: [], fileName: fileAnnotation.fileName },
+        body: { question: '', history: [], fileName: fileAnnotation.fileName } as any,
       });
       const blob = new Blob([response.data]);
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -112,6 +114,12 @@ export const BotBubble = (props: Props) => {
     }
   };
 
+  const onClickHandler = async (text: any) => {
+    if (props.onMintHandler) {
+      return props.onMintHandler(text);
+    }
+  };
+
   const submitFeedbackContent = async (text: string) => {
     const body = {
       content: text,
@@ -131,7 +139,7 @@ export const BotBubble = (props: Props) => {
   onMount(() => {
     if (botMessageEl) {
       botMessageEl.innerHTML = Marked.parse(props.message.message);
-      botMessageEl.querySelectorAll('a').forEach((link) => {
+      botMessageEl.querySelectorAll('a').forEach((link: any) => {
         link.target = '_blank';
       });
       if (props.fileAnnotations && props.fileAnnotations.length) {
@@ -160,17 +168,47 @@ export const BotBubble = (props: Props) => {
         <Avatar initialAvatarSrc={props.avatarSrc} />
       </Show>
       {props.message.message && (
-        <span
-          ref={botMessageEl}
-          class="px-4 py-2 ml-2 max-w-full chatbot-host-bubble prose"
-          data-testid="host-bubble"
-          style={{
-            'background-color': props.backgroundColor ?? defaultBackgroundColor,
-            color: props.textColor ?? defaultTextColor,
-            'border-radius': '6px',
-            'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}`,
-          }}
-        />
+        <div style={{ position: 'relative' }}>
+          <span
+            ref={botMessageEl}
+            class="px-4 py-2 ml-2 max-w-full chatbot-host-bubble prose"
+            data-testid="host-bubble"
+            style={{
+              'background-color': props.backgroundColor ?? defaultBackgroundColor,
+              color: props.textColor ?? defaultTextColor,
+              'border-radius': '6px',
+              'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}`,
+            }}
+          />
+
+          {props.message.message.startsWith('<img') && (
+            <div
+              style={{
+                position: 'absolute',
+                display: 'flex',
+                'flex-direction': 'row',
+                'align-items': 'center',
+                gap: '4px',
+                'z-index': 40,
+                bottom: '38px',
+                left: '10px',
+                background: props.isMintButtonDisabled ? '#CCCCCC' : '#FECE00',
+                'border-radius': '4px',
+                padding: '4px 8px 4px 8px',
+                color: 'black',
+                'font-weight': 'bolder',
+                'font-size': '12px',
+                width: '120px',
+                cursor: 'pointer',
+              }}
+            >
+              <img src="https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg" alt="mint-icon" />
+              <button disabled={props.isMintButtonDisabled} onClick={() => onClickHandler(botMessageEl?.children[0].currentSrc || null)}>
+                Mind as NFT
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {props.chatFeedbackStatus && props.message.messageId && (
         <>

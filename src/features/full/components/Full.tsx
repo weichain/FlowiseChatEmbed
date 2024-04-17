@@ -40,6 +40,9 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
           }}
         >
           <Bot
+            authToken={props.authToken}
+            isMintButtonDisabled={props.isMintButtonDisabled}
+            onMintHandler={props.onMintHandler}
             badgeBackgroundColor={props.theme?.chatWindow?.backgroundColor}
             bubbleBackgroundColor={props.theme?.button?.backgroundColor ?? defaultButtonColor}
             bubbleTextColor={props.theme?.button?.iconColor ?? defaultIconColor}
