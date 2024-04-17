@@ -233,7 +233,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   };
 
-  
   const addChatMessage = (allMessage: MessageType[]) => {
     localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: chatId(), chatHistory: allMessage }));
   };
@@ -246,7 +245,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
         return item;
       });
-      
+
       addChatMessage(updated);
       return [...updated];
     });
@@ -347,7 +346,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       body,
     });
 
-    if(result.data?.image_html) {
+    if (result.data?.image_html) {
       const image = result.data?.image_html;
       updateLastMessage(image, uuidv4());
       setUserInput('');
@@ -359,8 +358,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       const data = result.data;
 
       const question = data.response;
-      
-      if (value === '' && question) { 
+
+      if (value === '' && question) {
         setMessages((data) => {
           const messages = data.map((item, i) => {
             if (i === data.length - 2) {
@@ -730,7 +729,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setPreviews([]);
       };
     }),
-  );    
+  );
 
   return (
     <>

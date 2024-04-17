@@ -26,7 +26,7 @@ export const sendRequest = async <ResponseData>(
         typeof params !== 'string' && isDefined(params.body)
           ? {
               'Content-Type': 'application/json',
-              Authorization: `Bearer AehOSIu899ShjeheYSUHeweh16253HShjdhjs788263jdhEUIYsh`,
+              Authorization: `Bearer ${params.authToken}`,
             }
           : undefined,
       body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
@@ -34,7 +34,6 @@ export const sendRequest = async <ResponseData>(
     let data: any;
     const contentType = response.headers.get('Content-Type');
     if (contentType && contentType.includes('application/json')) {
-
       data = await response.json();
     } else if (typeof params !== 'string' && params.type === 'blob') {
       data = await response.blob();

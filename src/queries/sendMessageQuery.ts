@@ -23,11 +23,11 @@ export type IncomingInputV2 = {
 
 const BE_BASE_URL = 'http://139.59.213.209:8081/api/v1/';
 
-
 export type MessageRequest = {
   chatflowid?: string;
   apiHost?: string;
   body?: any;
+  authToken: string
 };
 
 export type FeedbackRatingType = 'THUMBS_UP' | 'THUMBS_DOWN';
@@ -65,13 +65,13 @@ export const updateFeedbackQuery = ({ id, apiHost = 'http://localhost:3000', bod
     body,
   });
 
-export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm', body }: MessageRequest) =>
+export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm', body, authToken }: MessageRequest) =>
   sendRequest<any>({
     method: 'POST',
     url: `${BE_BASE_URL}${apiHost}`,
     body,
+    authToken,
   });
-
 
 export const getChatbotConfig = ({ chatflowid, apiHost = 'http://localhost:3000' }: MessageRequest) =>
   sendRequest<any>({
