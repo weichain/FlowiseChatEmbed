@@ -193,13 +193,11 @@ textarea {
 
 .chatbot-button.selectable {
   color: var(--chatbot-host-bubble-color);
-  background-color: #f7f8ff;
   border: 1px solid #0042da;
 }
 
 .chatbot-host-bubble {
   color: var(--chatbot-host-bubble-color);
-  background-color: #f7f8ff;
 }
 
 .chatbot-host-bubble > .bubble-typing {
@@ -216,14 +214,12 @@ textarea {
 
 .chatbot-guest-bubble {
   color: var(--chatbot-guest-bubble-color);
-  background-color: #3b81f6;
   border-radius: 6px;
 }
 
 .chatbot-input,
 .feedback-input {
   color: #303235;
-  background-color: #ffffff;
   box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.1);
   border-radius: var(--chatbot-border-radius);
 }

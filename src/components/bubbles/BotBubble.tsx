@@ -163,9 +163,12 @@ export const BotBubble = (props: Props) => {
   });
 
   return (
-    <div class="flex flex-col justify-start mb-2 items-start host-container" style={{ 'margin-right': '50px' }}>
-      <Show when={props.showAvatar}>
-        <Avatar initialAvatarSrc={props.avatarSrc} />
+    <div
+      class="flex flex-row justify-start mb-2 host-container"
+      style={{ 'margin-right': '20px', 'align-items': `${props.message.message.startsWith('<img') ? 'start' : 'center'}` }}
+    >
+      <Show when={true}>
+        <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
       </Show>
       {props.message.message && (
         <div style={{ position: 'relative' }}>
@@ -174,8 +177,9 @@ export const BotBubble = (props: Props) => {
             class="px-4 py-2 ml-2 max-w-full chatbot-host-bubble prose"
             data-testid="host-bubble"
             style={{
-              'background-color': props.backgroundColor ?? defaultBackgroundColor,
-              color: props.textColor ?? defaultTextColor,
+              'max-width': `${props.message.message.startsWith('<img') ? '400px' : '100%'}`,
+              color: 'white',
+              display: `${props.message.message.startsWith('<img') ? 'block' : 'inline'}`,
               'border-radius': '6px',
               'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}`,
             }}
@@ -190,8 +194,8 @@ export const BotBubble = (props: Props) => {
                 'align-items': 'center',
                 gap: '4px',
                 'z-index': 40,
-                bottom: '38px',
-                left: '10px',
+                bottom: '16px',
+                left: '32px',
                 background: props.isMintButtonDisabled ? '#CCCCCC' : '#FECE00',
                 'border-radius': '4px',
                 padding: '4px 8px 4px 8px',
@@ -203,8 +207,12 @@ export const BotBubble = (props: Props) => {
               }}
             >
               <img src="https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg" alt="mint-icon" />
-              <button disabled={props.isMintButtonDisabled} onClick={() => onClickHandler(botMessageEl?.children[0].currentSrc || null)}>
-                Mind as NFT
+              <button
+                style={{ 'font-size': '12px', 'font-weight': '600' }}
+                disabled={props.isMintButtonDisabled}
+                onClick={() => onClickHandler(botMessageEl?.children[0].currentSrc || null)}
+              >
+                Mint as NFT
               </button>
             </div>
           )}

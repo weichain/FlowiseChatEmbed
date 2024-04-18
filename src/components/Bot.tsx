@@ -184,7 +184,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     ],
     { equals: false },
   );
-  const [socketIOClientId, setSocketIOClientId] = createSignal('');
   const [isChatFlowAvailableToStream, setIsChatFlowAvailableToStream] = createSignal(false);
   const [chatId, setChatId] = createSignal(uuidv4());
   const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
@@ -252,20 +251,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return [...updated];
     });
   };
-
-  const updateLastMessageSourceDocuments = (sourceDocuments: any) => {
-    setMessages((data) => {
-      const updated = data.map((item, i) => {
-        if (i === data.length - 1) {
-          return { ...item, sourceDocuments: sourceDocuments };
-        }
-        return item;
-      });
-      addChatMessage(updated);
-      return [...updated];
-    });
-  };
-
   const clearPreviews = () => {
     // Revoke the data uris to avoid memory leaks
     previews().forEach((file) => URL.revokeObjectURL(file.preview));
@@ -462,40 +447,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       });
 
       setMessages([...loadedMessages]);
-    }
-
-    // Determine if particular chatflow is available for streaming
-    const { data } = await isStreamAvailableQuery({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-    });
-
-    if (data) {
-      setIsChatFlowAvailableToStream(data?.isStreaming ?? false);
-    }
-
-    // Get the chatbotConfig
-    const result = await getChatbotConfig({
-      chatflowid: props.chatflowid,
-      apiHost: props.apiHost,
-    });
-
-    if (result.data) {
-      const chatbotConfig = result.data;
-      if (chatbotConfig.starterPrompts) {
-        const prompts: string[] = [];
-        Object.getOwnPropertyNames(chatbotConfig.starterPrompts).forEach((key) => {
-          prompts.push(chatbotConfig.starterPrompts[key].prompt);
-        });
-        setStarterPrompts(prompts);
-      }
-      if (chatbotConfig.chatFeedback) {
-        const chatFeedbackStatus = chatbotConfig.chatFeedback.status;
-        setChatFeedbackStatus(chatFeedbackStatus);
-      }
-      if (chatbotConfig.uploads) {
-        setUploadsConfig(chatbotConfig.uploads);
-      }
     }
 
     // eslint-disable-next-line solid/reactivity
