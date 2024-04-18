@@ -21,13 +21,12 @@ export type IncomingInputV2 = {
   fileName?: string; // Only for assistant
 };
 
-
 export type MessageRequest = {
   chatflowid?: string;
   apiHost?: string;
   body?: any;
   authToken?: string;
-  chatBotBEUrl?: string
+  chatBotBEUrl?: string;
 };
 
 export type FeedbackRatingType = 'THUMBS_UP' | 'THUMBS_DOWN';
@@ -65,7 +64,7 @@ export const updateFeedbackQuery = ({ id, apiHost = 'http://localhost:3000', bod
     body,
   });
 
-export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm', body, authToken, chatBotBEUrl }: MessageRequest) =>
+export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm/', body, authToken, chatBotBEUrl }: MessageRequest) =>
   sendRequest<any>({
     method: 'POST',
     url: `${chatBotBEUrl}${apiHost}`,

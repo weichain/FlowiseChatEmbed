@@ -1,6 +1,6 @@
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
-import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig, IncomingInputV2 } from '@/queries/sendMessageQuery';
+import { sendMessageQuery, isStreamAvailableQuery, getChatbotConfig } from '@/queries/sendMessageQuery';
 import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
 import { BotBubble } from './bubbles/BotBubble';
@@ -171,7 +171,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   let botContainer: HTMLDivElement | undefined;
 
   const [userInput, setUserInput] = createSignal('');
-  const [path, setPath] = createSignal('interact-with-llm');
+  const [path, setPath] = createSignal('interact-with-llm/');
   const [loading, setLoading] = createSignal(false);
   const [sourcePopupOpen, setSourcePopupOpen] = createSignal(false);
   const [sourcePopupSrc, setSourcePopupSrc] = createSignal({});
@@ -326,7 +326,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     let body: any;
 
     if (value.startsWith('/generate')) {
-      setPath('generate-image ');
+      setPath('generate-image/ ');
       body = {
         prompt: value,
       };
