@@ -68,7 +68,6 @@ export const TextInput = (props: Props) => {
       data-testid="input"
       style={{
         margin: 'auto',
-        'background-color': props.backgroundColor ?? defaultBackgroundColor,
         color: props.textColor ?? defaultTextColor,
       }}
       onKeyDown={submitWhenEnter}
@@ -87,7 +86,7 @@ export const TextInput = (props: Props) => {
         value={inputValue()}
         fontSize={props.fontSize}
         disabled={props.disabled}
-        placeholder={props.placeholder ?? 'Type your question'}
+        placeholder={props.placeholder ?? 'Write your prompt and I will generate the Image'}
       />
       {props.uploadsConfig?.isSpeechToTextEnabled ? (
         <RecordAudioButton buttonColor={props.sendButtonColor} type="button" class="m-0 start-recording-button" on:click={props.onMicrophoneClicked}>
