@@ -64,7 +64,7 @@ export const TextInput = (props: Props) => {
 
   return (
     <div
-      class={'flex items-center justify-between chatbot-input border border-[#eeeeee]'}
+      class={'flex items-center justify-between chatbot-input border border-[#606060]'}
       data-testid="input"
       style={{
         margin: 'auto',

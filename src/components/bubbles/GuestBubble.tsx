@@ -31,12 +31,14 @@ export const GuestBubble = (props: Props) => {
   });
 
   return (
-    <div class="flex justify-end mb-2 items-end guest-container" style={{ 'margin-left': '50px' }}>
+    <div class="flex p-4 mb-6 mt-6 guest-container">
+      <Show when={props.showAvatar}>
+        <Avatar initialAvatarSrc={props.avatarSrc} />
+      </Show>
       <div
-        class="max-w-full flex flex-col justify-center items-start chatbot-guest-bubble px-4 py-2 gap-2"
+        class="max-w-full flex flex-col justify-center items-start chatbot-guest-bubble px-2 gap-2"
         data-testid="guest-bubble"
         style={{
-          // 'background-color': props.backgroundColor ?? defaultBackgroundColor,
           color: props.textColor ?? defaultTextColor,
           'border-radius': '6px',
         }}
@@ -66,16 +68,16 @@ export const GuestBubble = (props: Props) => {
           </div>
         )}
         {props.message.message && (
-          <span
-            ref={userMessageEl}
-            class="mr-2 whitespace-pre-wrap"
-            style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}` }}
-          />
+          <>
+            <p class="text-[16px] font-semibold">You</p>
+            <span
+              ref={userMessageEl}
+              class="mr-2 whitespace-pre-wrap"
+              style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}` }}
+            />
+          </>
         )}
       </div>
-      <Show when={props.showAvatar}>
-        <Avatar initialAvatarSrc={props.avatarSrc} />
-      </Show>
     </div>
   );
 };

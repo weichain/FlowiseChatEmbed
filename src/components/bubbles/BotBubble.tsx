@@ -151,7 +151,7 @@ export const BotBubble = (props: Props) => {
           const button = document.createElement('button');
           button.textContent = annotations.fileName;
           button.className =
-            'py-2 px-4 mb-2 justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 file-annotation-button';
+            'py-2 mb-2 justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 file-annotation-button';
           button.addEventListener('click', function () {
             downloadFile(annotations);
           });
@@ -167,10 +167,7 @@ export const BotBubble = (props: Props) => {
   });
 
   return (
-    <div
-      class="flex flex-row justify-start mb-2 host-container"
-      style={{ 'margin-right': '20px', 'align-items': 'start' }}
-    >
+    <div class="flex flex-row justify-start mb-2 bg-[#272727] p-4 rounded-xl host-container" style={{ 'margin-right': '20px', 'align-items': 'start' }}>
       <Show when={true}>
         <>
           <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
@@ -181,10 +178,11 @@ export const BotBubble = (props: Props) => {
         </>
       </Show>
       {props.message.message && (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', "padding-left": '12px' }}>
+          <p class="text-[16px] font-semibold">AImagine</p>
           <span
             ref={botMessageEl}
-            class="px-4 py-2 ml-2 max-w-full chatbot-host-bubble prose"
+            class="py-2 max-w-full chatbot-host-bubble prose"
             data-testid="host-bubble"
             style={{
               'max-width': `${props.message.message.startsWith('<img') ? '400px' : '100%'}`,
