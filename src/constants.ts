@@ -11,5 +11,5 @@ export const defaultBotProps: BubbleProps = {
   },
   isMintButtonDisabled: false,
   authToken: '',
-  chatBotBEUrl: ''
+  chatBotBEUrl: '',
 };

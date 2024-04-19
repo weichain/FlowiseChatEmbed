@@ -1,10 +1,11 @@
-import { Show, createSignal, onMount } from 'solid-js';
+import { Accessor, Show, createSignal, onMount } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
 import { FeedbackRatingType, sendFeedbackQuery, sendFileDownloadQuery, updateFeedbackQuery } from '@/queries/sendMessageQuery';
 import { MessageType } from '../Bot';
 import { CopyToClipboardButton, ThumbsDownButton, ThumbsUpButton } from '../buttons/FeedbackButtons';
 import FeedbackContentDialog from '../FeedbackContentDialog';
+import { LoadingBubble } from './LoadingBubble';
 
 type Props = {
   message: MessageType;
@@ -20,6 +21,9 @@ type Props = {
   fontSize?: number;
   onMintHandler?: (input: string) => void;
   isMintButtonDisabled: boolean;
+  loading: Accessor<boolean>;
+  index: Accessor<number>;
+  messages: Accessor<MessageType[]>;
 };
 
 const defaultBackgroundColor = '#f7f8ff';
@@ -165,10 +169,16 @@ export const BotBubble = (props: Props) => {
   return (
     <div
       class="flex flex-row justify-start mb-2 host-container"
-      style={{ 'margin-right': '20px', 'align-items': `${props.message.message.startsWith('<img') ? 'start' : 'center'}` }}
+      style={{ 'margin-right': '20px', 'align-items': 'start' }}
     >
       <Show when={true}>
-        <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
+        <>
+          <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
+          {props.message.type === 'apiMessage' &&
+            props.message.message === '' &&
+            props.loading() &&
+            props.index() === props.messages().length - 1 && <LoadingBubble />}
+        </>
       </Show>
       {props.message.message && (
         <div style={{ position: 'relative' }}>
