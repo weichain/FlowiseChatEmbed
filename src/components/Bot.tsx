@@ -275,7 +275,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   // Handle form submission
   const handleSubmit = async (value: string) => {
-    setUserInput(value);
+    setUserInput(value);    
 
     if (value.trim() === '') {
       const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
@@ -777,6 +777,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     )}
                     {message.type === 'apiMessage' && (
                       <BotBubble
+                        loading={loading}
+                        index={index}
+                        messages={messages}
                         isMintButtonDisabled={props.isMintButtonDisabled}
                         onMintHandler={props.onMintHandler}
                         message={message}
@@ -793,7 +796,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       />
                     )}
                     {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
-                    {message.type === 'apiMessage' && message.message === '' && loading() && index() === messages().length - 1 && <LoadingBubble />}
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={[...removeDuplicateURL(message)]}>

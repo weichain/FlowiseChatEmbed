@@ -1,3 +1,4 @@
+import { Accessor } from 'solid-js';
 import { MessageType } from '../Bot';
 type Props = {
     message: MessageType;
@@ -13,6 +14,9 @@ type Props = {
     fontSize?: number;
     onMintHandler?: (input: string) => void;
     isMintButtonDisabled: boolean;
+    loading: Accessor<boolean>;
+    index: Accessor<number>;
+    messages: Accessor<MessageType[]>;
 };
 export declare const BotBubble: (props: Props) => import("solid-js").JSX.Element;
 export {};
