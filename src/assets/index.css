@@ -68,11 +68,11 @@ pre {
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
-.scrollable-container::-webkit-scrollbar {
-  display: none;
-}
+/* .scrollable-container::-webkit-scrollbar {
+  
+} */
 
-/* Hide scrollbar for IE, Edge and Firefox */
+Hide scrollbar for IE, Edge and Firefox
 .scrollable-container {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
