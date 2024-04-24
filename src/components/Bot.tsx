@@ -275,7 +275,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   // Handle form submission
   const handleSubmit = async (value: string) => {
-    setUserInput(value);    
+    setUserInput(value);
 
     if (value.trim() === '') {
       const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
@@ -308,23 +308,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return messages;
     });
 
-    let body: any;
-
-    if (value.startsWith('/generate')) {
-      setPath('generate-image/ ');
-      body = {
-        prompt: value,
-      };
-    } else {
-      body = {
-        text: value,
-        chat_history: [],
-      };
-    }
-
-    if (urls && urls.length > 0) body.uploads = urls;
-
-    if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
+    const body = {
+      text: value,
+      chat_history: [],
+    };
 
     setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
 
