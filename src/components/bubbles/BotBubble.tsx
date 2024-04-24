@@ -167,7 +167,10 @@ export const BotBubble = (props: Props) => {
   });
 
   return (
-    <div class="flex flex-row justify-start mb-2 bg-[#272727] p-4 rounded-xl host-container" style={{ 'margin-right': '20px', 'align-items': 'start' }}>
+    <div
+      class="flex flex-row justify-start mb-2 bg-[#272727] p-4 rounded-xl host-container"
+      style={{ 'margin-right': '20px', 'align-items': 'start' }}
+    >
       <Show when={true}>
         <>
           <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
@@ -178,7 +181,7 @@ export const BotBubble = (props: Props) => {
         </>
       </Show>
       {props.message.message && (
-        <div style={{ position: 'relative', "padding-left": '12px' }}>
+        <div style={{ position: 'relative', 'padding-left': '12px' }}>
           <p class="text-[16px] font-semibold">AImagine</p>
           <span
             ref={botMessageEl}
@@ -210,7 +213,7 @@ export const BotBubble = (props: Props) => {
                 color: 'black',
                 'font-weight': 'bolder',
                 'font-size': '12px',
-                width: '120px',
+                width: '100px',
                 cursor: 'pointer',
               }}
             >
@@ -220,7 +223,7 @@ export const BotBubble = (props: Props) => {
                 disabled={props.isMintButtonDisabled}
                 onClick={() => onClickHandler(botMessageEl?.children[0].currentSrc || null)}
               >
-                Mint as NFT
+                MINT NFT
               </button>
             </div>
           )}
