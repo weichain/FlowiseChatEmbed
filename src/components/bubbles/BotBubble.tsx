@@ -146,6 +146,11 @@ export const BotBubble = (props: Props) => {
       botMessageEl.querySelectorAll('a').forEach((link: any) => {
         link.target = '_blank';
       });
+      botMessageEl.querySelectorAll('img').forEach((img: any) => {
+        img.onload = () => {
+          displayMintButton();
+        };
+      });
       if (props.fileAnnotations && props.fileAnnotations.length) {
         for (const annotations of props.fileAnnotations) {
           const button = document.createElement('button');
@@ -165,6 +170,35 @@ export const BotBubble = (props: Props) => {
       }
     }
   });
+
+  function displayMintButton() {
+    const mintButtonContainer = document.createElement('div');
+    mintButtonContainer.className = 'mint-button-container';
+
+    const mintIcon = document.createElement('img');
+    mintIcon.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
+    mintIcon.alt = 'mint-icon';
+
+    const mintButton = document.createElement('button');
+    mintButton.textContent = 'MINT NFT';
+    mintButton.className = 'mint-button';
+
+    mintButton.onclick = () => {
+      mintButton.disabled = true;
+      mintButtonContainer.classList.add('disabled');
+
+      onClickHandler(botMessageEl?.children[0].currentSrc || null);
+
+      setTimeout(() => {
+        mintButton.disabled = false;
+        mintButtonContainer.classList.remove('disabled');
+      }, 5000);
+    };
+
+    mintButtonContainer.appendChild(mintIcon);
+    mintButtonContainer.appendChild(mintButton);
+    botMessageEl.appendChild(mintButtonContainer);
+  }
 
   return (
     <div
@@ -195,38 +229,6 @@ export const BotBubble = (props: Props) => {
               'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}`,
             }}
           />
-
-          {props.message.message.startsWith('<img') && (
-            <div
-              style={{
-                position: 'absolute',
-                display: 'flex',
-                'flex-direction': 'row',
-                'align-items': 'center',
-                gap: '4px',
-                'z-index': 40,
-                bottom: '16px',
-                left: '32px',
-                background: props.isMintButtonDisabled ? '#CCCCCC' : '#FECE00',
-                'border-radius': '4px',
-                padding: '4px 8px 4px 8px',
-                color: 'black',
-                'font-weight': 'bolder',
-                'font-size': '12px',
-                width: '100px',
-                cursor: 'pointer',
-              }}
-            >
-              <img src="https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg" alt="mint-icon" />
-              <button
-                style={{ 'font-size': '12px', 'font-weight': '600' }}
-                disabled={props.isMintButtonDisabled}
-                onClick={() => onClickHandler(botMessageEl?.children[0].currentSrc || null)}
-              >
-                MINT NFT
-              </button>
-            </div>
-          )}
         </div>
       )}
       {props.chatFeedbackStatus && props.message.messageId && (

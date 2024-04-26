@@ -430,3 +430,33 @@ input {
   padding: 10px 10px;
   font-family: 'Poppins', sans-serif;
 }
+
+.mint-button-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  z-index: 40;
+  bottom: 45px;
+  left: 20px;
+  background: #FECE00;
+  border-radius: 4px;
+  padding: 4px 8px 4px 8px;
+  color: black;
+  font-weight: bolder;
+  font-size: 12px;
+  width: 100px;
+  cursor: pointer;
+  height: 30px;
+}
+
+.mint-button-container.disabled {
+  background: #CCCCCC;
+  cursor: not-allowed;
+}
+
+.mint-button {
+  font-size: 12px;
+  font-weight: 600;
+}
