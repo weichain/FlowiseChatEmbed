@@ -743,7 +743,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         <div class="flex flex-col w-full h-full justify-start z-0">
           <div
             ref={chatContainer}
-            class="overflow-y-scroll flex flex-col flex-grow min-w-full w-full px-3 pt-[70px] relative scrollable-container chatbot-chat-view scroll-smooth"
+            class="overflow-y-scroll flex flex-col flex-grow min-w-full w-full px-3 pt-[12px] relative scrollable-container chatbot-chat-view scroll-smooth"
           >
             <For each={[...messages()]}>
               {(message, index) => {
@@ -853,7 +853,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               </For>
             </div>
           </Show>
-          <div class="w-full pl-3 pr-7 pt-2 pb-1">
+          <div class="w-full pl-3 pr-7 pt-2 pb-[45px]">
             {isRecording() ? (
               <>
                 {recordingNotSupported() ? (
