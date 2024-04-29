@@ -146,7 +146,8 @@ export const BotBubble = (props: Props) => {
       botMessageEl.querySelectorAll('a').forEach((link: any) => {
         link.target = '_blank';
       });
-      botMessageEl.querySelectorAll('img').forEach((img: any) => {
+      botMessageEl.querySelectorAll('img').forEach((img: any) =>
+      {
         img.onload = () => {
           displayMintButton();
         };
@@ -207,7 +208,7 @@ export const BotBubble = (props: Props) => {
     >
       <Show when={true}>
         <>
-          <Avatar initialAvatarSrc={'https://res.cloudinary.com/dwc808l7t/image/upload/v1713446895/Frame_427319599_n76cev.png'} />
+          <Avatar initialAvatarSrc={'/ai-avatar.svg'} />
           {props.message.type === 'apiMessage' &&
             props.message.message === '' &&
             props.loading() &&
@@ -222,9 +223,9 @@ export const BotBubble = (props: Props) => {
             class="py-2 max-w-full chatbot-host-bubble prose"
             data-testid="host-bubble"
             style={{
-              'max-width': `${props.message.message.startsWith('<img') ? '400px' : '100%'}`,
+              'max-width': '100%',
               color: 'white',
-              display: `${props.message.message.startsWith('<img') ? 'block' : 'inline'}`,
+              display: 'inline',
               'border-radius': '6px',
               'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}`,
             }}
