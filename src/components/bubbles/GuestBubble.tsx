@@ -33,7 +33,7 @@ export const GuestBubble = (props: Props) => {
   return (
     <div class="flex p-4 mb-6 mt-6 guest-container">
       <Show when={props.showAvatar}>
-        <Avatar initialAvatarSrc={props.avatarSrc} />
+        <Avatar initialAvatarSrc={'/drop-down-icon.svg'} />
       </Show>
       <div
         class="max-w-full flex flex-col justify-center items-start chatbot-guest-bubble px-2 gap-2"
