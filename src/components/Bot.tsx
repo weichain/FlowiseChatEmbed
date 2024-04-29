@@ -701,7 +701,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   return (
     <>
       {showInitialScreen() ? (
-        <div class="mt-8 flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-8/12">
+        <div class="mt-8 flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-12/12">
           <img src="/stars.svg" width={70} height={70} alt="starts" />
           <p class="bg-gradient-to-r from-[#FF4646] via-[#FF7246] to-[#FECE00] bg-clip-text text-center text-[28px] font-bold text-transparent lg:text-[32px]">
             Hello! I&apos;m AImagine Creator Tool assistant.

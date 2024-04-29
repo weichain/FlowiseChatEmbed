@@ -406,6 +406,11 @@ textarea {
   font-size: inherit;
 }
 
+.image-wrapper {
+  position: relative;
+  max-width: 400px;
+}
+
 .center {
   display: flex;
   justify-content: center;
@@ -438,7 +443,7 @@ input {
   align-items: center;
   gap: 4px;
   z-index: 40;
-  bottom: 45px;
+  bottom: 10px;
   left: 20px;
   background: #FECE00;
   border-radius: 4px;
