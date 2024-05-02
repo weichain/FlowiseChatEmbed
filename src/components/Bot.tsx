@@ -9,10 +9,11 @@ import { LoadingBubble } from './bubbles/LoadingBubble';
 import { BotMessageTheme, TextInputTheme, UserMessageTheme } from '@/features/bubble/types';
 import { Badge } from './Badge';
 import { SendButton } from '@/components/buttons/SendButton';
-import { CircleDotIcon, TrashIcon } from './icons';
+import { CircleDotIcon } from './icons';
 import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { InitialScreen } from './InitialScreen';
+import { Previews } from './Previews';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -472,39 +473,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               handleFileChange={handleFileChange}
             />
             <Show when={previews().length > 0}>
-              <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
-                <For each={[...previews()]}>
-                  {(item) => (
-                    <>
-                      {item.mime.startsWith('image/') ? (
-                        <button
-                          class="group w-9 h-9 flex items-center justify-center relative rounded-[10px] transition-colors duration-200"
-                          onClick={() => handleDeletePreview(item)}
-                        >
-                          <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
-                          <span class="absolute flex items-center justify-center z-40 w-3 h-3 top-[-5px] p-[8px] right-[-8px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
-                            <img class="w-[8px] max-w-none" src="/delete-preview.svg" />
-                          </span>
-                        </button>
-                      ) : (
-                        <div
-                          class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
-                          style={{
-                            width: `${
-                              chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
-                            }px`,
-                          }}
-                        >
-                          <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
-                          <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
-                            <TrashIcon color="#ffffff" />
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </For>
-              </div>
+              <Previews previews={previews} handleDeletePreview={handleDeletePreview} />
             </Show>
           </div>
         </div>
@@ -633,37 +602,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             </div>
             <Show when={previews().length > 0}>
               <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
-                <For each={[...previews()]}>
-                  {(item) => (
-                    <>
-                      {item.mime.startsWith('image/') ? (
-                        <button
-                          class="group w-9 h-9 flex items-center justify-center relative rounded-[10px] transition-colors duration-200"
-                          onClick={() => handleDeletePreview(item)}
-                        >
-                          <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
-                          <span class="absolute flex items-center justify-center z-40 w-3 h-3 top-[-5px] right-[-5px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
-                            <img src="/delete-preview.svg" />
-                          </span>
-                        </button>
-                      ) : (
-                        <div
-                          class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
-                          style={{
-                            width: `${
-                              chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
-                            }px`,
-                          }}
-                        >
-                          <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
-                          <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
-                            <TrashIcon color="#ffffff" />
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </For>
+                <Previews previews={previews} handleDeletePreview={handleDeletePreview} />
               </div>
             </Show>
             <Badge badgeBackgroundColor={props.badgeBackgroundColor} poweredByTextColor={props.poweredByTextColor} botContainer={botContainer} />
