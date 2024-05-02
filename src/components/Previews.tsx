@@ -8,7 +8,16 @@ interface IPreviewProps {
 
 export const Previews = (props: IPreviewProps) => {
   return (
-    <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
+    <div
+      style={{
+        'border-bottom': '1px solid #606060',
+        'border-right': '1px solid #606060',
+        'border-left': '1px solid #606060',
+        'border-bottom-right-radius': '8px',
+        'border-bottom-left-radius': '8px',
+      }}
+      class="w-full flex items-center justify-start gap-2 px-4 pb-2"
+    >
       <For each={[...props.previews()]}>
         {(item) => (
           <>

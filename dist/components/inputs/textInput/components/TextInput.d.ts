@@ -11,6 +11,7 @@ type Props = {
     onSubmit: (value: string) => void;
     uploadsConfig?: Partial<UploadsConfig>;
     setPreviews: Setter<unknown[]>;
+    previews?: any;
     onMicrophoneClicked: () => void;
     handleFileChange: (event: FileEvent<HTMLInputElement>) => void;
 };

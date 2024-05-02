@@ -465,6 +465,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               sendButtonColor={props.textInput?.sendButtonColor}
               fontSize={props.fontSize}
               disabled={loading()}
+              previews={previews}
               defaultValue={userInput()}
               onSubmit={handleSubmit}
               uploadsConfig={uploadsConfig()}
@@ -533,7 +534,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 }}
               </For>
             </div>
-            <div class="w-full pl-3 pr-7 pt-2">
+            <div class="w-full pl-3 pr-7">
               {isRecording() ? (
                 <>
                   {recordingNotSupported() ? (
@@ -591,6 +592,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   sendButtonColor={props.textInput?.sendButtonColor}
                   fontSize={props.fontSize}
                   disabled={loading()}
+                  previews={previews}
                   defaultValue={userInput()}
                   onSubmit={handleSubmit}
                   uploadsConfig={uploadsConfig()}
@@ -601,7 +603,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               )}
             </div>
             <Show when={previews().length > 0}>
-              <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
+              <div class="w-full flex items-center justify-start gap-2 pr-[28px] pl-[12px]">
                 <Previews previews={previews} handleDeletePreview={handleDeletePreview} />
               </div>
             </Show>
