@@ -28,7 +28,7 @@ export const Previews = (props: IPreviewProps) => {
               >
                 <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
                 <span class="absolute flex items-center p-2 justify-center z-40 w-3 h-3 top-[-5px] right-[-8px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
-                  <img  class="w-[8px] max-w-none" src="/delete-preview.svg" />
+                  <img class="w-[8px] max-w-none" src="/delete-preview.svg" />
                 </span>
               </button>
             ) : (

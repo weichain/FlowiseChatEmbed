@@ -211,6 +211,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       };
     });
 
+
+    setMessages((prevMessages) => {
+      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage' }];
+      addChatMessage(messages);
+      return messages;
+    });
+
     let body;
     if (fileToUpload()) {
       body = fileToUpload();
