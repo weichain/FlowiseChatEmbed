@@ -14,6 +14,7 @@ export const sendRequest = async <ResponseData>(
         body?: Record<string, unknown> | FormData;
         type?: string;
         authToken?: string;
+        contentType?: string;
       }
     | string,
 ): Promise<{ data?: ResponseData; error?: Error }> => {
@@ -25,11 +26,10 @@ export const sendRequest = async <ResponseData>(
       headers:
         typeof params !== 'string' && isDefined(params.body)
           ? {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${params.authToken}`,
             }
           : undefined,
-      body: typeof params !== 'string' && isDefined(params.body) ? JSON.stringify(params.body) : undefined,
+      body: typeof params !== 'string' && isDefined(params.body) ? (params.body as FormData) : undefined,
     });
     let data: any;
     const contentType = response.headers.get('Content-Type');

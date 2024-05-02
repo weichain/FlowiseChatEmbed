@@ -140,77 +140,76 @@ export const BotBubble = (props: Props) => {
     }
   };
 
- onMount(() => {
-   if (botMessageEl) {
-     botMessageEl.innerHTML = Marked.parse(props.message.message);
-     botMessageEl.querySelectorAll('a').forEach((link: any) => {
-       link.target = '_blank';
-     });
-     botMessageEl.querySelectorAll('img').forEach((img: any) => {
-       const wrapperDiv = document.createElement('div');
-       wrapperDiv.className = 'image-wrapper';
+  onMount(() => {
+    if (botMessageEl) {
+      botMessageEl.innerHTML = Marked.parse(props.message.message);
+      botMessageEl.querySelectorAll('a').forEach((link: any) => {
+        link.target = '_blank';
+      });
+      botMessageEl.querySelectorAll('img').forEach((img: any) => {
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'image-wrapper';
 
-       wrapperDiv.appendChild(img.cloneNode(true));
+        wrapperDiv.appendChild(img.cloneNode(true));
 
-       img.parentNode.replaceChild(wrapperDiv, img);
+        img.parentNode.replaceChild(wrapperDiv, img);
 
-       const imgInsideWrapper = wrapperDiv.querySelector('img');
-       if (imgInsideWrapper) {
-         imgInsideWrapper.onload = () => {
-           displayMintButton(wrapperDiv); // Pass the wrapperDiv to displayMintButton
-         };
-       }
-     });
+        const imgInsideWrapper = wrapperDiv.querySelector('img');
+        if (imgInsideWrapper) {
+          imgInsideWrapper.onload = () => {
+            displayMintButton(wrapperDiv); // Pass the wrapperDiv to displayMintButton
+          };
+        }
+      });
 
-     if (props.fileAnnotations && props.fileAnnotations.length) {
-       for (const annotations of props.fileAnnotations) {
-         const button = document.createElement('button');
-         button.textContent = annotations.fileName;
-         button.className =
-           'py-2 mb-2 justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 file-annotation-button';
-         button.addEventListener('click', function () {
-           downloadFile(annotations);
-         });
-         const svgContainer = document.createElement('div');
-         svgContainer.className = 'ml-2';
-         svgContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>`;
+      if (props.fileAnnotations && props.fileAnnotations.length) {
+        for (const annotations of props.fileAnnotations) {
+          const button = document.createElement('button');
+          button.textContent = annotations.fileName;
+          button.className =
+            'py-2 mb-2 justify-center font-semibold text-white focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 file-annotation-button';
+          button.addEventListener('click', function () {
+            downloadFile(annotations);
+          });
+          const svgContainer = document.createElement('div');
+          svgContainer.className = 'ml-2';
+          svgContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>`;
 
-         button.appendChild(svgContainer);
-         botMessageEl.appendChild(button);
-       }
-     }
-   }
- });
+          button.appendChild(svgContainer);
+          botMessageEl.appendChild(button);
+        }
+      }
+    }
+  });
 
- function displayMintButton(wrapper: any) {
-   const mintButtonContainer = document.createElement('div');
-   mintButtonContainer.className = 'mint-button-container';
+  function displayMintButton(wrapper: any) {
+    const mintButtonContainer = document.createElement('div');
+    mintButtonContainer.className = 'mint-button-container';
 
-   const mintIcon = document.createElement('img');
-   mintIcon.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
-   mintIcon.alt = 'mint-icon';
+    const mintIcon = document.createElement('img');
+    mintIcon.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
+    mintIcon.alt = 'mint-icon';
 
-   const mintButton = document.createElement('button');
-   mintButton.textContent = 'MINT NFT';
-   mintButton.className = 'mint-button';
+    const mintButton = document.createElement('button');
+    mintButton.textContent = 'MINT NFT';
+    mintButton.className = 'mint-button';
 
-   mintButton.onclick = () => {
-     mintButton.disabled = true;
-     mintButtonContainer.classList.add('disabled');
+    mintButton.onclick = () => {
+      mintButton.disabled = true;
+      mintButtonContainer.classList.add('disabled');
 
-     onClickHandler(wrapper?.children[0].currentSrc || null);
+      onClickHandler(wrapper?.children[0].currentSrc || null);
 
-     setTimeout(() => {
-       mintButton.disabled = false;
-       mintButtonContainer.classList.remove('disabled');
-     }, 5000);
-   };
+      setTimeout(() => {
+        mintButton.disabled = false;
+        mintButtonContainer.classList.remove('disabled');
+      }, 5000);
+    };
 
-   mintButtonContainer.appendChild(mintIcon);
-   mintButtonContainer.appendChild(mintButton);
-   wrapper.appendChild(mintButtonContainer); // Append to the wrapper
- }
-
+    mintButtonContainer.appendChild(mintIcon);
+    mintButtonContainer.appendChild(mintButton);
+    wrapper.appendChild(mintButtonContainer); // Append to the wrapper
+  }
 
   return (
     <div
