@@ -27,8 +27,8 @@ export const Previews = (props: IPreviewProps) => {
                 onClick={() => props.handleDeletePreview(item)}
               >
                 <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
-                <span class="absolute flex items-center justify-center z-40 w-3 h-3 top-[-5px] right-[-5px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
-                  <img src="/delete-preview.svg" />
+                <span class="absolute flex items-center p-2 justify-center z-40 w-3 h-3 top-[-5px] right-[-8px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
+                  <img  class="w-[8px] max-w-none" src="/delete-preview.svg" />
                 </span>
               </button>
             ) : (
