@@ -72,14 +72,7 @@ export const TextInput = (props: Props) => {
       }}
       onKeyDown={submitWhenEnter}
     >
-      {props.uploadsConfig?.isImageUploadAllowed ? (
-        <>
-          <ImageUploadButton buttonColor={props.sendButtonColor} type="button" class="m-0" on:click={handleImageUploadClick}>
-            <span style={{ 'font-family': 'Poppins, sans-serif' }}>Image Upload</span>
-          </ImageUploadButton>
-          <input style={{ display: 'none' }} multiple ref={fileUploadRef as HTMLInputElement} type="file" onChange={handleFileChange} />
-        </>
-      ) : null}
+      <input style={{ display: 'none' }} multiple ref={fileUploadRef as HTMLInputElement} type="file" onChange={handleFileChange} />
       <ShortTextInput
         ref={inputRef as HTMLInputElement}
         onInput={handleInput}
@@ -88,11 +81,12 @@ export const TextInput = (props: Props) => {
         disabled={props.disabled}
         placeholder={props.placeholder ?? 'Write your prompt and I will generate the Image'}
       />
-      {props.uploadsConfig?.isSpeechToTextEnabled ? (
-        <RecordAudioButton buttonColor={props.sendButtonColor} type="button" class="m-0 start-recording-button" on:click={props.onMicrophoneClicked}>
-          <span style={{ 'font-family': 'Poppins, sans-serif' }}>Record Audio</span>
-        </RecordAudioButton>
-      ) : null}
+      <ImageUploadButton buttonColor={props.sendButtonColor} type="button" class="m-0" on:click={handleImageUploadClick}>
+        <span style={{ 'font-family': 'Poppins, sans-serif' }}>Image Upload</span>
+      </ImageUploadButton>
+      {/* <RecordAudioButton buttonColor={props.sendButtonColor} type="button" class="m-0 start-recording-button" on:click={props.onMicrophoneClicked}>
+        <span style={{ 'font-family': 'Poppins, sans-serif' }}>Record Audio</span>
+      </RecordAudioButton> */}
       <SendButton
         sendButtonColor={props.sendButtonColor}
         type="button"
