@@ -193,7 +193,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         return;
       }
     }
-    
+
     setLoading(true);
     scrollToBottom();
 
@@ -209,7 +209,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         mime: item.mime,
       };
     });
- 
 
     let body;
     if (fileToUpload()) {
@@ -368,45 +367,43 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     };
   };
 
-const handleFileChange = async (event: FileEvent<HTMLInputElement>) => {
-  if (!event.target.files) return;
+  const handleFileChange = async (event: FileEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
 
-  const formData = new FormData();
-  formData.append('file', event.target.files[0]);
-  setFileToUpload(formData);
+    const formData = new FormData();
+    formData.append('file', event.target.files[0]);
+    setFileToUpload(formData);
 
-  const file = event.target.files[0];
-  if (!file) {
-    return;
-  }
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
 
-  const reader = new FileReader();
-  const { name } = file;
+    const reader = new FileReader();
+    const { name } = file;
 
-  const newFile = await new Promise<FilePreview>((resolve) => {
-    reader.onload = (evt) => {
-      if (!evt?.target?.result) {
-        return;
-      }
-      const { result } = evt.target;
-      resolve({
-        data: result,
-        preview: URL.createObjectURL(file),
-        type: 'file',
-        name: name,
-        mime: file.type,
-      });
-    };
-    reader.readAsDataURL(file);
-  });
+    const newFile = await new Promise<FilePreview>((resolve) => {
+      reader.onload = (evt) => {
+        if (!evt?.target?.result) {
+          return;
+        }
+        const { result } = evt.target;
+        resolve({
+          data: result,
+          preview: URL.createObjectURL(file),
+          type: 'file',
+          name: name,
+          mime: file.type,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
 
-  setPreviews((prevPreviews) => {
-    // Remove the last file preview if there's one
-    const newPreviews = prevPreviews.slice(0, -1);
-    return [...newPreviews, newFile];
-  });
-};
-
+    setPreviews((prevPreviews) => {
+      const newPreviews = prevPreviews.slice(0, -1);
+      return [...newPreviews, newFile];
+    });
+  };
 
   const handleDeletePreview = (itemToDelete: FilePreview) => {
     if (itemToDelete.type === 'file') {
@@ -457,60 +454,60 @@ const handleFileChange = async (event: FileEvent<HTMLInputElement>) => {
   return (
     <>
       {showInitialScreen() ? (
-          <div class="flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-12/12">
-            <InitialScreen onPredefinedPromptClick={onPredefinedPromptClick} />
-            <div class="lg:absolute lg:bottom-3 lg:m-auto mt-10 w-full lg:w-6/12">
-              <TextInput
-                backgroundColor={props.textInput?.backgroundColor}
-                textColor={props.textInput?.textColor}
-                placeholder={props.textInput?.placeholder}
-                sendButtonColor={props.textInput?.sendButtonColor}
-                fontSize={props.fontSize}
-                disabled={loading()}
-                defaultValue={userInput()}
-                onSubmit={handleSubmit}
-                uploadsConfig={uploadsConfig()}
-                setPreviews={setPreviews}
-                onMicrophoneClicked={onMicrophoneClicked}
-                handleFileChange={handleFileChange}
-              />
-          <Show when={previews().length > 0}>
-            <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
-              <For each={[...previews()]}>
-                {(item) => (
-                  <>
-                    {item.mime.startsWith('image/') ? (
-                      <button
-                        class="group w-9 h-9 flex items-center justify-center relative rounded-[10px] transition-colors duration-200"
-                        onClick={() => handleDeletePreview(item)}
-                      >
-                        <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
-                        <span class="absolute flex items-center justify-center z-40 w-3 h-3 top-[-5px] right-[-5px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
-                          <img src="/delete-preview.svg" />
-                        </span>
-                      </button>
-                    ) : (
-                      <div
-                        class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
-                        style={{
-                          width: `${
-                            chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
-                          }px`,
-                        }}
-                      >
-                        <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
-                        <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
-                          <TrashIcon color="#ffffff" />
+        <div class="flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-12/12">
+          <InitialScreen onPredefinedPromptClick={onPredefinedPromptClick} />
+          <div class="lg:absolute lg:bottom-3 lg:m-auto mt-10 w-full lg:w-6/12">
+            <TextInput
+              backgroundColor={props.textInput?.backgroundColor}
+              textColor={props.textInput?.textColor}
+              placeholder={props.textInput?.placeholder}
+              sendButtonColor={props.textInput?.sendButtonColor}
+              fontSize={props.fontSize}
+              disabled={loading()}
+              defaultValue={userInput()}
+              onSubmit={handleSubmit}
+              uploadsConfig={uploadsConfig()}
+              setPreviews={setPreviews}
+              onMicrophoneClicked={onMicrophoneClicked}
+              handleFileChange={handleFileChange}
+            />
+            <Show when={previews().length > 0}>
+              <div class="w-full flex items-center justify-start gap-2 px-5 pt-2">
+                <For each={[...previews()]}>
+                  {(item) => (
+                    <>
+                      {item.mime.startsWith('image/') ? (
+                        <button
+                          class="group w-9 h-9 flex items-center justify-center relative rounded-[10px] transition-colors duration-200"
+                          onClick={() => handleDeletePreview(item)}
+                        >
+                          <img class="w-full h-full bg-cover rounded-md" src={item.data as string} />
+                          <span class="absolute flex items-center justify-center z-40 w-3 h-3 top-[-5px] p-[8px] right-[-8px] border border-[#606060] bg-black rounded-full transition-colors duration-200">
+                            <img class="w-[8px] max-w-none" src="/delete-preview.svg" />
+                          </span>
                         </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </For>
-            </div>
-          </Show>
-            </div>
+                      ) : (
+                        <div
+                          class={`inline-flex basis-auto flex-grow-0 flex-shrink-0 justify-between items-center rounded-xl h-12 p-1 mr-1 bg-gray-500`}
+                          style={{
+                            width: `${
+                              chatContainer ? (botProps.isFullPage ? chatContainer?.offsetWidth / 4 : chatContainer?.offsetWidth / 2) : '200'
+                            }px`,
+                          }}
+                        >
+                          <audio class="block bg-cover bg-center w-full h-full rounded-none text-transparent" controls src={item.data as string} />
+                          <button class="w-7 h-7 flex items-center justify-center bg-transparent p-1" onClick={() => handleDeletePreview(item)}>
+                            <TrashIcon color="#ffffff" />
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </For>
+              </div>
+            </Show>
           </div>
+        </div>
       ) : (
         <div
           ref={botContainer}
