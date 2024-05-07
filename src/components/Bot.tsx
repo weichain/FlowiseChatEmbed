@@ -458,6 +458,8 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
     setShowInitialScreen(false);
   };
+  console.log('HELLO');
+  
 
   return (
     <>
@@ -496,7 +498,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           <div class="flex flex-col w-full h-full justify-start z-0">
             <div
               ref={chatContainer}
-              class="overflow-y-scroll flex flex-col flex-grow min-w-full w-full px-3 pt-[12px] relative scrollable-container chatbot-chat-view scroll-smooth"
+              class="overflow-y-scroll flex flex-col flex-grow min-w-full w-full lg:pr-3 lg:pl-3 pr-0 pl-3 pt-[12px] relative scrollable-container chatbot-chat-view scroll-smooth"
             >
               <For each={[...messages()]}>
                 {(message, index) => {
@@ -541,7 +543,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 }}
               </For>
             </div>
-            <div class="w-full pl-3 pr-7">
+            <div class="w-full pl-3 lg:pr-7 pr-5">
               {isRecording() ? (
                 <>
                   {recordingNotSupported() ? (
