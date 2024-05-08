@@ -220,7 +220,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     let body;
     if (fileToUpload()) {
-      body = fileToUpload();
+      const data = fileToUpload();
+      data.append('text', value);
+      body = data;
       setFileToUpload(null);
     } else {
       const formData = new FormData();
