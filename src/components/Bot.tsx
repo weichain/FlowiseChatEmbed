@@ -211,7 +211,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       };
     });
 
-
     setMessages((prevMessages) => {
       const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage' }];
       addChatMessage(messages);
@@ -460,7 +459,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
     setShowInitialScreen(false);
   };
-
+  
   return (
     <>
       {showInitialScreen() ? (
@@ -543,7 +542,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 }}
               </For>
             </div>
-            <div class="w-full pl-3 pr-7">
+            <div class="w-full pl-3 lg:pr-7 pr-5">
               {isRecording() ? (
                 <>
                   {recordingNotSupported() ? (
