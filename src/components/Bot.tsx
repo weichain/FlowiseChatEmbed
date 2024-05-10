@@ -59,6 +59,7 @@ export type observersConfigType = Record<'observeUserInput' | 'observeLoading' |
 export type BotProps = {
   authToken: string;
   onMintHandler: (input: string) => void;
+  onSaveHandler: (input: string) => void;
   isMintButtonDisabled: boolean;
   chatflowid: string;
   apiHost?: string;
@@ -459,7 +460,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
     setShowInitialScreen(false);
   };
-  
+
   return (
     <>
       {showInitialScreen() ? (
@@ -518,6 +519,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       )}
                       {message.type === 'apiMessage' && (
                         <BotBubble
+                          onSaveHandler={props.onSaveHandler}
                           loading={loading}
                           index={index}
                           messages={messages}

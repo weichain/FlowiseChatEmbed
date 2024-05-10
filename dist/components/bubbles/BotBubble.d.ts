@@ -12,7 +12,8 @@ type Props = {
     textColor?: string;
     chatFeedbackStatus?: boolean;
     fontSize?: number;
-    onMintHandler?: (input: string) => void;
+    onMintHandler: (input: string) => void;
+    onSaveHandler: (input: string) => void;
     isMintButtonDisabled: boolean;
     loading: Accessor<boolean>;
     index: Accessor<number>;

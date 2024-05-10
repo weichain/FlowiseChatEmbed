@@ -19,7 +19,8 @@ type Props = {
   textColor?: string;
   chatFeedbackStatus?: boolean;
   fontSize?: number;
-  onMintHandler?: (input: string) => void;
+  onMintHandler: (input: string) => void;
+  onSaveHandler: (input: string) => void;
   isMintButtonDisabled: boolean;
   loading: Accessor<boolean>;
   index: Accessor<number>;
@@ -124,6 +125,12 @@ export const BotBubble = (props: Props) => {
     }
   };
 
+  const onSaveImageHandler = async (text: any) => {
+    if (props.onSaveHandler) {
+      return props.onSaveHandler(text);
+    }
+  };
+
   const submitFeedbackContent = async (text: string) => {
     const body = {
       content: text,
@@ -157,7 +164,7 @@ export const BotBubble = (props: Props) => {
         const imgInsideWrapper = wrapperDiv.querySelector('img');
         if (imgInsideWrapper) {
           imgInsideWrapper.onload = () => {
-            displayMintButton(wrapperDiv); // Pass the wrapperDiv to displayMintButton
+            displayMintButtons(wrapperDiv); // Pass the wrapperDiv to displayMintButton
           };
         }
       });
@@ -182,33 +189,62 @@ export const BotBubble = (props: Props) => {
     }
   });
 
-  function displayMintButton(wrapper: any) {
-    const mintButtonContainer = document.createElement('div');
-    mintButtonContainer.className = 'mint-button-container';
+  function displayMintButtons(wrapper: any) {
+    const leftMintButtonContainer = document.createElement('div');
+    leftMintButtonContainer.className = 'mint-button-container';
+    leftMintButtonContainer.style.position = 'absolute';
+    leftMintButtonContainer.style.bottom = '5px';
+    leftMintButtonContainer.style.left = '5px';
 
-    const mintIcon = document.createElement('img');
-    mintIcon.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
-    mintIcon.alt = 'mint-icon';
+    const rightMintButtonContainer = document.createElement('div');
+    rightMintButtonContainer.className = 'save-button-container';
+    rightMintButtonContainer.style.position = 'absolute';
 
-    const mintButton = document.createElement('button');
-    mintButton.textContent = 'MINT NFT';
-    mintButton.className = 'mint-button';
+    const mintIconLeft = document.createElement('img');
+    mintIconLeft.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
+    mintIconLeft.alt = 'mint-icon-left';
 
-    mintButton.onclick = () => {
-      mintButton.disabled = true;
-      mintButtonContainer.classList.add('disabled');
+    const mintButtonLeft = document.createElement('button');
+    mintButtonLeft.textContent = 'MINT NFT';
+    mintButtonLeft.className = 'mint-button';
+
+    mintButtonLeft.onclick = () => {
+      mintButtonLeft.disabled = true;
+      leftMintButtonContainer.classList.add('disabled');
 
       onClickHandler(wrapper?.children[0].currentSrc || null);
 
       setTimeout(() => {
-        mintButton.disabled = false;
-        mintButtonContainer.classList.remove('disabled');
-      }, 5000);
+        mintButtonLeft.disabled = false;
+        leftMintButtonContainer.classList.remove('disabled');
+      }, 10000);
     };
 
-    mintButtonContainer.appendChild(mintIcon);
-    mintButtonContainer.appendChild(mintButton);
-    wrapper.appendChild(mintButtonContainer); // Append to the wrapper
+    const mintIconRight1 = document.createElement('img');
+    mintIconRight1.src = '/save-image.svg';
+    mintIconRight1.alt = 'save-icon';
+
+    mintIconRight1.onclick = () => {
+      onSaveImageHandler(wrapper?.children[0].currentSrc || null);
+    };
+
+    // const mintIconRight2 = document.createElement('img');
+    // mintIconRight2.src = '/unsave-image.svg';
+    // mintIconRight2.alt = 'unsave-image';
+
+    const mintButtonRight = document.createElement('button');
+    mintButtonRight.className = 'mint-button';
+
+    leftMintButtonContainer.appendChild(mintIconLeft);
+    leftMintButtonContainer.appendChild(mintButtonLeft);
+
+    // rightMintButtonContainer.appendChild(mintIconRight2);
+    rightMintButtonContainer.appendChild(mintIconRight1);
+    rightMintButtonContainer.appendChild(mintButtonRight);
+
+    wrapper.style.position = 'relative';
+    wrapper.appendChild(leftMintButtonContainer);
+    wrapper.appendChild(rightMintButtonContainer);
   }
 
   return (

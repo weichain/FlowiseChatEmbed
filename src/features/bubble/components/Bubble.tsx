@@ -60,6 +60,7 @@ export const Bubble = (props: BubbleProps) => {
             authToken={props.authToken}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}
+            onSaveHandler={props.onSaveHandler}
             badgeBackgroundColor={bubbleProps.theme?.chatWindow?.backgroundColor}
             bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
             bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}
