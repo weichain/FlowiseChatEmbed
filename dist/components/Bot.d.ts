@@ -34,6 +34,7 @@ export type observersConfigType = Record<'observeUserInput' | 'observeLoading' |
 export type BotProps = {
     authToken: string;
     onMintHandler: (input: string) => void;
+    onSaveHandler: (input: string) => void;
     isMintButtonDisabled: boolean;
     chatflowid: string;
     apiHost?: string;

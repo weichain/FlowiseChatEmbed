@@ -455,6 +455,24 @@ input {
   height: 30px;
 }
 
+.save-button-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  z-index: 40;
+  bottom: 5px;
+  right: -55px;
+  padding: 4px 8px 4px 8px;
+  color: black;
+  font-weight: bolder;
+  font-size: 12px;
+  width: 100px;
+  cursor: pointer;
+  height: 30px;
+}
+
 .mint-button-container.disabled {
   background: #CCCCCC;
   cursor: not-allowed;
