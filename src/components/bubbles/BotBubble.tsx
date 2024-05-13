@@ -228,17 +228,12 @@ export const BotBubble = (props: Props) => {
       onSaveImageHandler(wrapper?.children[0].currentSrc || null);
     };
 
-    // const mintIconRight2 = document.createElement('img');
-    // mintIconRight2.src = '/unsave-image.svg';
-    // mintIconRight2.alt = 'unsave-image';
-
     const mintButtonRight = document.createElement('button');
     mintButtonRight.className = 'mint-button';
 
     leftMintButtonContainer.appendChild(mintIconLeft);
     leftMintButtonContainer.appendChild(mintButtonLeft);
 
-    // rightMintButtonContainer.appendChild(mintIconRight2);
     rightMintButtonContainer.appendChild(mintIconRight1);
     rightMintButtonContainer.appendChild(mintButtonRight);
 
