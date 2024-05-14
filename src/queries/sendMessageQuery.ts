@@ -64,7 +64,7 @@ export const updateFeedbackQuery = ({ id, apiHost = 'http://localhost:3000', bod
     body,
   });
 
-export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm/', body, authToken, chatBotBEUrl }: MessageRequest) =>
+export const sendMessageQuery = ({ chatflowid, apiHost = 'api/v1/interact-with-llm/', body, authToken, chatBotBEUrl }: MessageRequest) =>
   sendRequest<any>({
     method: 'POST',
     url: `${chatBotBEUrl}${apiHost}`,

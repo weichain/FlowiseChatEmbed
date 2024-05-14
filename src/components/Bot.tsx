@@ -235,7 +235,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
 
     const result = await sendMessageQuery({
-      apiHost: 'interact-with-llm/',
+      apiHost: 'api/v1/interact-with-llm/',
       body,
       authToken: props.authToken,
       chatBotBEUrl: props.chatBotBEUrl,
