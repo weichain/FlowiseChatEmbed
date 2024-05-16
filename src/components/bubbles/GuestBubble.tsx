@@ -26,9 +26,18 @@ export const GuestBubble = (props: Props) => {
 
   onMount(() => {
     if (userMessageEl) {
-      userMessageEl.innerHTML = Marked.parse(props.message.message);
+      const parsedMessage = Marked.parse(props.message.message);
+      userMessageEl.innerHTML = parsedMessage;
+      styleLinksInElement(userMessageEl);
     }
   });
+
+  const styleLinksInElement = (element: HTMLDivElement) => {
+    const links = element.querySelectorAll('a');
+    links.forEach((link) => {
+      link.style.wordBreak = 'break-all';
+    });
+  };
 
   return (
     <div class="flex p-4 mb-6 mt-6 guest-container">
@@ -70,7 +79,7 @@ export const GuestBubble = (props: Props) => {
         {props.message.message && (
           <>
             <p class="text-[16px] font-semibold">You</p>
-            <span
+            <div
               ref={userMessageEl}
               class="mr-2 whitespace-pre-wrap"
               style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}` }}

@@ -155,7 +155,7 @@ export const BotBubble = (props: Props) => {
       });
       botMessageEl.querySelectorAll('strong').forEach((strong: any) => {
         strong.className = 'text-white';
-      })
+      });
       botMessageEl.querySelectorAll('img').forEach((img: any) => {
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'image-wrapper';
