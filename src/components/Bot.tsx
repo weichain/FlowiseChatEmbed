@@ -218,43 +218,42 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return messages;
     });
 
-  function transformMessages(messages: any) {
-    return messages.map((message: any) => {
-      switch (message.type) {
-        case 'userMessage':
-          return {
-            role: 'user',
-            content: message.message,
-          };
-        case 'apiMessage':
-          return {
-            role: 'assistant',
-            content: message.message,
-          };
-        default:
-          return null;
-      }
-    });
-  }
+    function transformMessages(messages: any) {
+      return messages.map((message: any) => {
+        switch (message.type) {
+          case 'userMessage':
+            return {
+              role: 'user',
+              content: message.message,
+            };
+          case 'apiMessage':
+            return {
+              role: 'assistant',
+              content: message.message,
+            };
+          default:
+            return null;
+        }
+      });
+    }
 
-  const history = transformMessages(messageList);
+    const history = transformMessages(messageList);
 
-  const lastFourMessages = history.slice(-4);
+    const lastFourMessages = history.slice(-4);
 
-  let body;
-  if (fileToUpload()) {
-    const data = fileToUpload();
-    data.append('text', value);
-    data.append('chat_history', JSON.stringify(lastFourMessages));
-    body = data;
-    setFileToUpload(null);
-  } else {
-    const formData = new FormData();
-    formData.append('text', value);
-    formData.append('chat_history', JSON.stringify(lastFourMessages));
-    body = formData;
-  }
-
+    let body;
+    if (fileToUpload()) {
+      const data = fileToUpload();
+      data.append('text', value);
+      data.append('chat_history', JSON.stringify(lastFourMessages));
+      body = data;
+      setFileToUpload(null);
+    } else {
+      const formData = new FormData();
+      formData.append('text', value);
+      formData.append('chat_history', JSON.stringify(lastFourMessages));
+      body = formData;
+    }
 
     clearPreviews();
 
