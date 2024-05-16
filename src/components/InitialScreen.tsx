@@ -2,19 +2,19 @@ import { For } from 'solid-js';
 
 const boxPropsData = [
   {
-    label: 'What is AImagine?',
+    label: 'What can this bot do?',
     icon: '/question-mark.svg',
   },
   {
-    label: 'What are Creator Pools?',
+    label: 'Generate a photograph of a woman wearing a futuristic helmet, in the style of 8k 3d, meticulously detailed',
     icon: '/question-mark.svg',
   },
   {
-    label: 'Generate a picture of a whale holding Bitcoin',
+    label: 'Make an image of an intricate mechanical heart, maximum detail, cinematic',
     icon: '/generate-image.svg',
   },
   {
-    label: 'Where can I find $AIMG Tokenomics?',
+    label: 'Create an image of a Shiba Inu wearing an astronaut suit and helmet, standing on the moon',
     icon: '/question-mark.svg',
   },
 ];
@@ -25,7 +25,7 @@ interface IPredefinedPromptsProps {
 
 export const InitialScreen = (props: IPredefinedPromptsProps) => {
   return (
-    <div class="mt-8 flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-12/12">
+    <div class="lg:mt-8 md:mt-8 mt-44 flex w-full lg:h-screen md:h-screen lg:overflow-y-visible overflow-y-scroll flex-col items-center gap-4 lg:w-12/12">
       <img src="/stars.svg" width={70} height={70} alt="starts" />
       <p class="bg-gradient-to-r from-[#FF4646] via-[#FF7246] to-[#FECE00] bg-clip-text text-center text-[28px] font-bold text-transparent lg:text-[32px]">
         Hello! I&apos;m AImagine Creator Tool assistant.
@@ -56,7 +56,7 @@ function PredefinedPrompts(props: PredefinedPromptsProps) {
   return (
     <div
       onClick={() => props.onPredefinedPromptClick(props.label)}
-      class="relative flex h-[174px] lg:h-[209px] w-[170px] md:w-[308px] lg:w-[220px] cursor-pointer rounded-2xl bg-[#272727] p-4 hover:border hover:border-red-500"
+      class="relative flex lg:h-[209px] w-[170px] md:w-[308px] lg:w-[220px] cursor-pointer rounded-2xl bg-[#272727] p-4 hover:border hover:border-red-500"
     >
       <p>{props.label}</p>
       <img class="absolute bottom-3 right-3" src={props.icon} width={30} height={30} alt="Prompt Image" />

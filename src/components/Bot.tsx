@@ -218,17 +218,43 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return messages;
     });
 
-    let body;
-    if (fileToUpload()) {
-      const data = fileToUpload();
-      data.append('text', value);
-      body = data;
-      setFileToUpload(null);
-    } else {
-      const formData = new FormData();
-      formData.append('text', value);
-      body = formData;
-    }
+  function transformMessages(messages: any) {
+    return messages.map((message: any) => {
+      switch (message.type) {
+        case 'userMessage':
+          return {
+            role: 'user',
+            content: message.message,
+          };
+        case 'apiMessage':
+          return {
+            role: 'assistant',
+            content: message.message,
+          };
+        default:
+          return null;
+      }
+    });
+  }
+
+  const history = transformMessages(messageList);
+
+  const lastFourMessages = history.slice(-4);
+
+  let body;
+  if (fileToUpload()) {
+    const data = fileToUpload();
+    data.append('text', value);
+    data.append('chat_history', JSON.stringify(lastFourMessages));
+    body = data;
+    setFileToUpload(null);
+  } else {
+    const formData = new FormData();
+    formData.append('text', value);
+    formData.append('chat_history', JSON.stringify(lastFourMessages));
+    body = formData;
+  }
+
 
     clearPreviews();
 
@@ -464,9 +490,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   return (
     <>
       {showInitialScreen() ? (
-        <div class="flex w-full h-screen flex-col items-center gap-4 lg:m-auto lg:w-12/12">
+        <div class="flex w-full h-screen flex-col items-center gap-4 lg:w-12/12">
           <InitialScreen onPredefinedPromptClick={onPredefinedPromptClick} />
-          <div class="lg:absolute lg:bottom-3 lg:m-auto mt-10 w-full lg:w-6/12">
+          <div class="lg:absolute lg:bottom-3 lg:m-auto px-2 pb-1 w-full lg:w-6/12">
             <TextInput
               backgroundColor={props.textInput?.backgroundColor}
               textColor={props.textInput?.textColor}
@@ -490,15 +516,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ) : (
         <div
           ref={botContainer}
-          class={
-            'relative flex w-full max-w-5xl h-full text-base overflow-hidden bg-cover bg-center flex-col items-center chatbot-container ' +
-            props.class
-          }
+          class={'relative flex w-full h-full max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
         >
-          <div class="flex flex-col w-full h-full justify-start z-0">
+          <div class="flex flex-col w-full h-full justify-start z-0 chatbot-container">
             <div
               ref={chatContainer}
-              class="overflow-y-scroll flex flex-col flex-grow min-w-full w-full px-3 pt-[50px] relative scrollable-container chatbot-chat-view scroll-smooth"
+              class="overflow-y-scroll overflow-x-hidden flex flex-col flex-grow min-w-full w-full px-3 lg:mt-[30px] md:mt-[30px] mt-[130px] relative scrollable-container chatbot-chat-view scroll-smooth"
             >
               <For each={[...messages()]}>
                 {(message, index) => {
@@ -595,21 +618,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   )}
                 </>
               ) : (
-                <TextInput
-                  backgroundColor={props.textInput?.backgroundColor}
-                  textColor={props.textInput?.textColor}
-                  placeholder={props.textInput?.placeholder}
-                  sendButtonColor={props.textInput?.sendButtonColor}
-                  fontSize={props.fontSize}
-                  disabled={loading()}
-                  previews={previews}
-                  defaultValue={userInput()}
-                  onSubmit={handleSubmit}
-                  uploadsConfig={uploadsConfig()}
-                  setPreviews={setPreviews}
-                  onMicrophoneClicked={onMicrophoneClicked}
-                  handleFileChange={handleFileChange}
-                />
+                <div class="pb-2">
+                  <TextInput
+                    backgroundColor={props.textInput?.backgroundColor}
+                    textColor={props.textInput?.textColor}
+                    placeholder={props.textInput?.placeholder}
+                    sendButtonColor={props.textInput?.sendButtonColor}
+                    fontSize={props.fontSize}
+                    disabled={loading()}
+                    previews={previews}
+                    defaultValue={userInput()}
+                    onSubmit={handleSubmit}
+                    uploadsConfig={uploadsConfig()}
+                    setPreviews={setPreviews}
+                    onMicrophoneClicked={onMicrophoneClicked}
+                    handleFileChange={handleFileChange}
+                  />
+                </div>
               )}
             </div>
             <Show when={previews().length > 0}>
