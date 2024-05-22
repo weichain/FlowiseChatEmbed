@@ -11,6 +11,7 @@ import { updateConversationById } from '@/queries/conversations';
 type Props = {
   message: any;
   imagedSaved: boolean;
+  chatBotBEUrl: string;
   walletAddress: string;
   messageId: string;
   role: string;
@@ -247,9 +248,18 @@ export const BotBubble = (props: Props) => {
       setImagedSaved(saveState);
       saveIcon.src = saveState ? '/saved-image.svg' : '/save-image.svg';
 
-      if (saveState) {
+      if (saveState)
+      {
+        console.log('here in the bot saving');
+        console.log('wrapper?.children[0].currentSrc', wrapper?.children[0].currentSrc);
+        console.log('props.messageId', props.messageId);
+        
         await onSaveImageHandler(wrapper?.children[0].currentSrc || null, props.messageId);
-      } else {
+      } else
+      {
+        console.log('here in the bot unsaving');
+        console.log({ messageId: props.messageId, conversationId: props.chatId });
+        
         await onUnsaveImageHandler({ messageId: props.messageId, conversationId: props.chatId });
       }
 
@@ -258,6 +268,7 @@ export const BotBubble = (props: Props) => {
         saveImage: saveState,
         messageId: props.messageId,
         walletAddress: props.walletAddress,
+        baseUrl: props.chatBotBEUrl,
       });
     };
 

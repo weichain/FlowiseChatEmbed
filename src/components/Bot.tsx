@@ -144,10 +144,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
   createEffect(() => {
     const fetchChats = async () => {
-      if (props.chatId) {
-        const result = await getChatById({ conversationId: props.chatId, walletAddress: props.walletAddress });
-        if (result.data)
-        {
+      if (props.chatId)
+      {
+        console.log('chatId', props.chatBotBEUrl);
+        
+        const result = await getChatById({ conversationId: props.chatId, walletAddress: props.walletAddress, baseUrl: props.chatBotBEUrl });
+        if (result.data) {
           setShowInitialScreen(false);
           setMessages(result.data.messages || []);
           localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: result.data.messages }));
@@ -273,6 +275,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     const result = await sendMessageQuery({
       body,
+      baseUrl: props.chatBotBEUrl,
       isConvNew: props.chatId ? false : true,
     });
 
@@ -284,8 +287,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       scrollToBottom();
     }
 
-    if (result.data?.data)
-    {
+    if (result.data?.data) {
       console.log('result.data.data', result.data);
       const data = result.data.data;
 
@@ -543,6 +545,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       {message.role === 'assistant' && (
                         <BotBubble
                           onUnsaveImageHandler={props.onUnsaveImageHandler}
+                          chatBotBEUrl={props.chatBotBEUrl}
                           role={message.role}
                           walletAddress={props.walletAddress}
                           messageId={message._id}

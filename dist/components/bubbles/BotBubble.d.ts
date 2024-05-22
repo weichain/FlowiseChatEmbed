@@ -3,6 +3,7 @@ import { MessageType } from '../Bot';
 type Props = {
     message: any;
     imagedSaved: boolean;
+    chatBotBEUrl: string;
     walletAddress: string;
     messageId: string;
     role: string;

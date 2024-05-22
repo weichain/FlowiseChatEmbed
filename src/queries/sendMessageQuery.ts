@@ -64,10 +64,10 @@ export const updateFeedbackQuery = ({ id, apiHost = 'http://localhost:3000', bod
     body,
   });
 
-export const sendMessageQuery = ({ body, isConvNew }: any) =>
+export const sendMessageQuery = ({ body, isConvNew, baseUrl }: any) =>
   sendRequest<any>({
     method: 'POST',
-    url: `https://hammerhead-app-wc8yc.ondigitalocean.app/api/v1/interact-with-llm?newConversation=${isConvNew}`,
+    url: `${baseUrl}api/v1/interact-with-llm?newConversation=${isConvNew}`,
     body,
   });
 

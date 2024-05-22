@@ -83,7 +83,9 @@ export const GuestBubble = (props: Props) => {
             <div
               ref={userMessageEl}
               class="mr-2 whitespace-pre-wrap"
-              style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}, ${props.messages().length === 0 ? 'width: 600px' : ''}` }}
+              style={{
+                'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}, ${props.messages().length === 0 ? 'width: 600px' : ''}`,
+              }}
             />
           </>
         )}
