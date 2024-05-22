@@ -4,7 +4,8 @@ import { Marked } from '@ts-stack/markdown';
 import { MessageType } from '../Bot';
 
 type Props = {
-  message: MessageType;
+  message: any;
+  messages: any;
   apiHost?: string;
   chatflowid: string;
   chatId: string;
@@ -26,7 +27,7 @@ export const GuestBubble = (props: Props) => {
 
   onMount(() => {
     if (userMessageEl) {
-      const parsedMessage = Marked.parse(props.message.message);
+      const parsedMessage = Marked.parse(props.message);
       userMessageEl.innerHTML = parsedMessage;
       styleLinksInElement(userMessageEl);
     }
@@ -52,7 +53,7 @@ export const GuestBubble = (props: Props) => {
           'border-radius': '6px',
         }}
       >
-        {props.message.fileUploads && props.message.fileUploads.length > 0 && (
+        {props.message?.fileUploads && props.message.fileUploads.length > 0 && (
           <div class="flex flex-col items-start flex-wrap w-full gap-2">
             <For each={props.message.fileUploads}>
               {(item) => {
@@ -76,13 +77,13 @@ export const GuestBubble = (props: Props) => {
             </For>
           </div>
         )}
-        {props.message.message && (
+        {props.message && (
           <>
             <p class="text-[16px] font-semibold">You</p>
             <div
               ref={userMessageEl}
               class="mr-2 whitespace-pre-wrap"
-              style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}` }}
+              style={{ 'font-size': props.fontSize ? `${props.fontSize}px` : `${defaultFontSize}, ${props.messages().length === 0 ? 'width: 600px' : ''}` }}
             />
           </>
         )}

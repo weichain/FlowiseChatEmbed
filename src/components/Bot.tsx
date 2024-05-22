@@ -7,13 +7,13 @@ import { GuestBubble } from './bubbles/GuestBubble';
 import { BotBubble } from './bubbles/BotBubble';
 import { LoadingBubble } from './bubbles/LoadingBubble';
 import { BotMessageTheme, TextInputTheme, UserMessageTheme } from '@/features/bubble/types';
-import { Badge } from './Badge';
 import { SendButton } from '@/components/buttons/SendButton';
 import { CircleDotIcon } from './icons';
 import { CancelButton } from './buttons/CancelButton';
 import { cancelAudioRecording, startAudioRecording, stopAudioRecording } from '@/utils/audioRecording';
 import { InitialScreen } from './InitialScreen';
 import { Previews } from './Previews';
+import { getChatById } from '@/queries/conversations';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -58,9 +58,11 @@ export type observersConfigType = Record<'observeUserInput' | 'observeLoading' |
 
 export type BotProps = {
   authToken: string;
-  onMintHandler: (input: string) => void;
-  onSaveHandler: (input: string) => void;
+  onMintHandler: any;
+  onSaveHandler: any;
+  onUnsaveImageHandler: any;
   isMintButtonDisabled: boolean;
+  walletAddress: string;
   chatflowid: string;
   apiHost?: string;
   chatBotBEUrl: string;
@@ -79,6 +81,7 @@ export type BotProps = {
   fontSize?: number;
   isFullPage?: boolean;
   observersConfig?: observersConfigType;
+  chatId: string;
 };
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
@@ -96,7 +99,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [userInput, setUserInput] = createSignal('');
 
   const [loading, setLoading] = createSignal(false);
-  const [messages, setMessages] = createSignal<MessageType[]>([]);
+  const [messages, setMessages] = createSignal<any>([]);
   const [isChatFlowAvailableToStream, setIsChatFlowAvailableToStream] = createSignal(false);
   const [chatId, setChatId] = createSignal(uuidv4());
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
@@ -139,6 +142,30 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }, 50);
   });
 
+  createEffect(() => {
+    const fetchChats = async () => {
+      if (props.chatId) {
+        const result = await getChatById({ conversationId: props.chatId, walletAddress: props.walletAddress });
+        if (result.data)
+        {
+          setShowInitialScreen(false);
+          setMessages(result.data.messages || []);
+          localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: result.data.messages }));
+        } else {
+          setShowInitialScreen(true);
+          setMessages([]);
+          localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: [] }));
+        }
+      } else {
+        setShowInitialScreen(true);
+        setMessages([]);
+        localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: [] }));
+      }
+    };
+
+    fetchChats();
+  });
+
   const scrollToBottom = () => {
     setTimeout(() => {
       chatContainer?.scrollTo(0, chatContainer.scrollHeight);
@@ -146,14 +173,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   };
 
   const addChatMessage = (allMessage: MessageType[]) => {
-    localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: chatId(), chatHistory: allMessage }));
+    localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: allMessage }));
   };
 
-  const updateLastMessage = (text: string, messageId: string, sourceDocuments: any = null, fileAnnotations: any = null) => {
+  const updateLastMessage = (text: string, messageId?: string) => {
+    console.log('updateLastMessage', text);
+
     setMessages((data) => {
-      const updated = data.map((item, i) => {
+      const updated = data.map((item: any, i: any) => {
         if (i === data.length - 1) {
-          return { ...item, message: item.message + text, messageId, sourceDocuments, fileAnnotations };
+          return { ...item, content: text, _id: messageId };
         }
         return item;
       });
@@ -201,7 +230,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
 
     // Send user question and history to API
     const welcomeMessage = props.welcomeMessage ?? defaultWelcomeMessage;
-    const messageList = messages().filter((msg) => msg.message !== welcomeMessage);
+    const messageList = messages().filter((msg: any) => msg.message !== welcomeMessage);
 
     const urls = previews().map((item) => {
       return {
@@ -213,75 +242,58 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
 
     setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message: value, type: 'userMessage' }];
+      const messages: MessageType[] = [...prevMessages, { content: value, role: 'user' }];
       addChatMessage(messages);
       return messages;
     });
 
-    function transformMessages(messages: any) {
-      return messages.map((message: any) => {
-        switch (message.type) {
-          case 'userMessage':
-            return {
-              role: 'user',
-              content: message.message,
-            };
-          case 'apiMessage':
-            return {
-              role: 'assistant',
-              content: message.message,
-            };
-          default:
-            return null;
-        }
-      });
-    }
-
-    const history = transformMessages(messageList);
-
-    const lastFourMessages = history.slice(-4);
-
     let body;
+    const formData = new FormData();
+
+    formData.append('text', value);
+
     if (fileToUpload()) {
       const data = fileToUpload();
       data.append('text', value);
-      data.append('chat_history', JSON.stringify(lastFourMessages));
+      if (props.chatId) {
+        data.append('convId', props.chatId);
+      }
       body = data;
       setFileToUpload(null);
     } else {
-      const formData = new FormData();
-      formData.append('text', value);
-      formData.append('chat_history', JSON.stringify(lastFourMessages));
+      if (props.chatId) {
+        formData.append('convId', props.chatId);
+      }
       body = formData;
     }
 
     clearPreviews();
 
-    setMessages((prevMessages) => [...prevMessages, { message: '', type: 'apiMessage' }]);
+    setMessages((prevMessages) => [...prevMessages, { content: '', role: 'assistant' }]);
 
     const result = await sendMessageQuery({
-      apiHost: 'interact-with-llm/',
       body,
-      authToken: props.authToken,
-      chatBotBEUrl: props.chatBotBEUrl,
+      isConvNew: props.chatId ? false : true,
     });
 
     if (result.data?.image_html) {
       const image = result.data?.image_html;
-      updateLastMessage(image, uuidv4());
+      updateLastMessage(image);
       setUserInput('');
       setLoading(false);
       scrollToBottom();
     }
 
-    if (result.data?.response) {
-      const data = result.data;
+    if (result.data?.data)
+    {
+      console.log('result.data.data', result.data);
+      const data = result.data.data;
 
-      const question = data.response;
+      const question = data;
 
       if (value === '' && question) {
         setMessages((data) => {
-          const messages = data.map((item, i) => {
+          const messages = data.map((item: any, i: any) => {
             if (i === data.length - 2) {
               return { ...item, message: question };
             }
@@ -293,10 +305,10 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       }
       if (urls && urls.length > 0) {
         setMessages((data) => {
-          const messages = data.map((item, i) => {
+          const messages = data.map((item: any, i: any) => {
             if (i === data.length - 2) {
               if (item.fileUploads) {
-                const fileUploads = item?.fileUploads.map((file) => ({
+                const fileUploads = item?.fileUploads.map((file: any) => ({
                   type: file.type,
                   name: file.name,
                   mime: file.mime,
@@ -311,14 +323,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         });
       }
       if (!isChatFlowAvailableToStream()) {
-        let text = '';
-        if (data.response) text = data.response;
-        else if (data.json) text = JSON.stringify(data.json, null, 2);
-        else text = JSON.stringify(data, null, 2);
-
-        updateLastMessage(text, data?.chatMessageId, data?.sourceDocuments, data?.fileAnnotations);
+        updateLastMessage(question, result.data.messageId);
       } else {
-        updateLastMessage(question, data?.chatMessageId, data?.sourceDocuments, data?.fileAnnotations);
+        updateLastMessage(question);
       }
       setLoading(false);
       setUserInput('');
@@ -344,45 +351,38 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   });
 
   // eslint-disable-next-line solid/reactivity
-  createEffect(async () => {
-    const chatMessage = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
-    if (chatMessage) {
-      const objChatMessage = JSON.parse(chatMessage);
-      setChatId(objChatMessage.chatId);
-      const loadedMessages = objChatMessage.chatHistory.map((message: MessageType) => {
-        const chatHistory: MessageType = {
-          messageId: message?.messageId,
-          message: message.message,
-          type: message.type,
-        };
-        if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
-        if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
-        if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
-        return chatHistory;
-      });
+  // createEffect(async () => {
+  //   const chatMessage = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
+  //   if (chatMessage) {
+  //     const objChatMessage = JSON.parse(chatMessage);
+  //     setChatId(objChatMessage.chatId);
+  //     const loadedMessages = objChatMessage.chatHistory.map((message: MessageType) => {
+  //       const chatHistory: MessageType = {
+  //         messageId: message?.messageId,
+  //         message: message.message,
+  //         type: message.type,
+  //       };
+  //       if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
+  //       if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
+  //       if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
+  //       return chatHistory;
+  //     });
 
-      setMessages([...loadedMessages]);
-    }
+  //     setMessages([...loadedMessages]);
+  //   }
 
-    // eslint-disable-next-line solid/reactivity
-    return () => {
-      setUserInput('');
-      setLoading(false);
-      setMessages([
-        {
-          message: props.welcomeMessage ?? defaultWelcomeMessage,
-          type: 'apiMessage',
-        },
-      ]);
-    };
-  });
-
-  createEffect(() => {
-    const chatMessage = localStorage.getItem(`${props.chatflowid}_EXTERNAL`);
-    if (!chatMessage) {
-      setShowInitialScreen(true);
-    }
-  });
+  //   // eslint-disable-next-line solid/reactivity
+  //   return () => {
+  //     setUserInput('');
+  //     setLoading(false);
+  //     setMessages([
+  //       {
+  //         message: props.welcomeMessage ?? defaultWelcomeMessage,
+  //         type: 'apiMessage',
+  //       },
+  //     ]);
+  //   };
+  // });
 
   const addRecordingToPreviews = (blob: Blob) => {
     const mimeType = blob.type.substring(0, blob.type.indexOf(';'));
@@ -464,22 +464,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     stopAudioRecording(addRecordingToPreviews);
   };
 
-  createEffect(
-    // listen for changes in previews
-    on(previews, (uploads) => {
-      // wait for audio recording to load and then send
-      const containsAudio = uploads.filter((item) => item.type === 'audio').length > 0;
-      if (uploads.length >= 1 && containsAudio) {
-        setIsRecording(false);
-        setRecordingNotSupported(false);
-        promptClick('');
-      }
+  // createEffect(
+  //   // listen for changes in previews
+  //   on(previews, (uploads) => {
+  //     // wait for audio recording to load and then send
+  //     const containsAudio = uploads.filter((item) => item.type === 'audio').length > 0;
+  //     if (uploads.length >= 1 && containsAudio) {
+  //       setIsRecording(false);
+  //       setRecordingNotSupported(false);
+  //       promptClick('');
+  //     }
 
-      return () => {
-        setPreviews([]);
-      };
-    }),
-  );
+  //     return () => {
+  //       setPreviews([]);
+  //     };
+  //   }),
+  // );
 
   const onPredefinedPromptClick = (prompt: string) => {
     handleSubmit(prompt);
@@ -489,7 +489,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   return (
     <>
       {showInitialScreen() ? (
-        <div class="flex w-full h-screen flex-col items-center gap-4 lg:w-12/12">
+        <div class="flex w-full h-screen chatbot-container flex-col items-center gap-4">
           <InitialScreen onPredefinedPromptClick={onPredefinedPromptClick} />
           <div class="lg:absolute lg:bottom-3 lg:m-auto px-2 pb-1 w-full lg:w-6/12">
             <TextInput
@@ -515,23 +515,24 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ) : (
         <div
           ref={botContainer}
-          class={'relative flex w-full h-full max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
+          class={'relative flex w-full h-full pb-2 max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
         >
           <div class="flex flex-col w-full h-full justify-start z-0 chatbot-container">
             <div
               ref={chatContainer}
-              class="overflow-y-scroll overflow-x-hidden flex flex-col flex-grow min-w-full w-full px-3 lg:mt-[30px] md:mt-[30px] mt-[130px] relative scrollable-container chatbot-chat-view scroll-smooth"
+              class="overflow-y-scroll overflow-x-hidden flex flex-col flex-grow min-w-full w-full px-3 lg:mt-[30px] md:mt-[30px] relative scrollable-container chatbot-chat-view scroll-smooth"
             >
               <For each={[...messages()]}>
-                {(message, index) => {
+                {(message: any, index) => {
                   return (
                     <>
-                      {message.type === 'userMessage' && (
+                      {message.role === 'user' && (
                         <GuestBubble
-                          message={message}
+                          messages={messages}
+                          message={message.content}
                           apiHost={props.apiHost}
                           chatflowid={props.chatflowid}
-                          chatId={chatId()}
+                          chatId={props.chatId}
                           backgroundColor={props.userMessage?.backgroundColor}
                           textColor={props.userMessage?.textColor}
                           showAvatar={props.userMessage?.showAvatar}
@@ -539,18 +540,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                           fontSize={props.fontSize}
                         />
                       )}
-                      {message.type === 'apiMessage' && (
+                      {message.role === 'assistant' && (
                         <BotBubble
+                          onUnsaveImageHandler={props.onUnsaveImageHandler}
+                          role={message.role}
+                          walletAddress={props.walletAddress}
+                          messageId={message._id}
+                          imagedSaved={message.imageSaved}
                           onSaveHandler={props.onSaveHandler}
                           loading={loading}
                           index={index}
                           messages={messages}
                           isMintButtonDisabled={props.isMintButtonDisabled}
                           onMintHandler={props.onMintHandler}
-                          message={message}
+                          message={message.content}
                           fileAnnotations={message.fileAnnotations}
                           chatflowid={props.chatflowid}
-                          chatId={chatId()}
+                          chatId={props.chatId}
                           apiHost={props.apiHost}
                           backgroundColor={props.botMessage?.backgroundColor}
                           textColor={props.botMessage?.textColor}
@@ -560,13 +566,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                           fontSize={props.fontSize}
                         />
                       )}
-                      {message.type === 'userMessage' && loading() && index() === messages().length - 1 && <LoadingBubble />}
+                      {message.role === 'user' && loading() && index() === messages().length - 1 && <LoadingBubble />}
                     </>
                   );
                 }}
               </For>
             </div>
-            <div class="w-full pl-3 lg:pr-7 pr-5">
+            <div class="w-full pr-7 pl-3 lg:pr-7">
               {isRecording() ? (
                 <>
                   {recordingNotSupported() ? (
@@ -617,7 +623,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                   )}
                 </>
               ) : (
-                <div class="pb-2">
+                <div>
                   <TextInput
                     backgroundColor={props.textInput?.backgroundColor}
                     textColor={props.textInput?.textColor}

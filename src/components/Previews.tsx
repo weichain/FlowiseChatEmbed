@@ -16,7 +16,7 @@ export const Previews = (props: IPreviewProps) => {
         'border-bottom-right-radius': '8px',
         'border-bottom-left-radius': '8px',
       }}
-      class="w-full flex items-center justify-start gap-2 px-4 pb-2"
+      class="w-full flex items-center justify-start gap-2 px-4 pb-4"
     >
       <For each={[...props.previews()]}>
         {(item) => (

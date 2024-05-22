@@ -33,9 +33,11 @@ type observerConfigType = (accessor: string | boolean | object | MessageType[]) 
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 export type BotProps = {
     authToken: string;
-    onMintHandler: (input: string) => void;
-    onSaveHandler: (input: string) => void;
+    onMintHandler: any;
+    onSaveHandler: any;
+    onUnsaveImageHandler: any;
     isMintButtonDisabled: boolean;
+    walletAddress: string;
     chatflowid: string;
     apiHost?: string;
     chatBotBEUrl: string;
@@ -54,6 +56,7 @@ export type BotProps = {
     fontSize?: number;
     isFullPage?: boolean;
     observersConfig?: observersConfigType;
+    chatId: string;
 };
 export declare const Bot: (botProps: BotProps & {
     class?: string;

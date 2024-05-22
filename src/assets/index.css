@@ -455,6 +455,12 @@ input {
   height: 30px;
 }
 
+@media only screen and (max-width: 600px) {
+  .chatbot-container {
+    height: calc(100vh - 60px);
+  }
+}
+
 .save-button-container {
   position: absolute;
   display: flex;

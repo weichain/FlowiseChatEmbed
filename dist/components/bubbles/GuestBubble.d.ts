@@ -1,6 +1,6 @@
-import { MessageType } from '../Bot';
 type Props = {
-    message: MessageType;
+    message: any;
+    messages: any;
     apiHost?: string;
     chatflowid: string;
     chatId: string;

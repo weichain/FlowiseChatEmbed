@@ -6,9 +6,14 @@ import { MessageType } from '../Bot';
 import { CopyToClipboardButton, ThumbsDownButton, ThumbsUpButton } from '../buttons/FeedbackButtons';
 import FeedbackContentDialog from '../FeedbackContentDialog';
 import { LoadingBubble } from './LoadingBubble';
+import { updateConversationById } from '@/queries/conversations';
 
 type Props = {
-  message: MessageType;
+  message: any;
+  imagedSaved: boolean;
+  walletAddress: string;
+  messageId: string;
+  role: string;
   chatflowid: string;
   chatId: string;
   apiHost?: string;
@@ -19,8 +24,9 @@ type Props = {
   textColor?: string;
   chatFeedbackStatus?: boolean;
   fontSize?: number;
-  onMintHandler: (input: string) => void;
-  onSaveHandler: (input: string) => void;
+  onMintHandler: any;
+  onSaveHandler: any;
+  onUnsaveImageHandler: any;
   isMintButtonDisabled: boolean;
   loading: Accessor<boolean>;
   index: Accessor<number>;
@@ -38,6 +44,7 @@ export const BotBubble = (props: Props) => {
   const [rating, setRating] = createSignal('');
   const [feedbackId, setFeedbackId] = createSignal('');
   const [showFeedbackContentDialog, setShowFeedbackContentModal] = createSignal(false);
+  const [imagedSaved, setImagedSaved] = createSignal(props.imagedSaved);
 
   const downloadFile = async (fileAnnotation: any) => {
     try {
@@ -119,15 +126,21 @@ export const BotBubble = (props: Props) => {
     }
   };
 
-  const onClickHandler = async (text: any) => {
+  const onClickHandler = async (text: any, messageId: string) => {
     if (props.onMintHandler) {
-      return props.onMintHandler(text);
+      return props.onMintHandler(text, messageId);
     }
   };
 
-  const onSaveImageHandler = async (text: any) => {
+  const onSaveImageHandler = async (text: any, messageId: string) => {
     if (props.onSaveHandler) {
-      return props.onSaveHandler(text);
+      return props.onSaveHandler(text, messageId);
+    }
+  };
+
+  const onUnsaveImageHandler = async ({ messageId, conversationId }: { messageId: string; conversationId: string }) => {
+    if (props.onSaveHandler) {
+      return props.onUnsaveImageHandler({ messageId, conversationId });
     }
   };
 
@@ -149,7 +162,7 @@ export const BotBubble = (props: Props) => {
 
   onMount(() => {
     if (botMessageEl) {
-      botMessageEl.innerHTML = Marked.parse(props.message.message);
+      botMessageEl.innerHTML = props.message;
       botMessageEl.querySelectorAll('a').forEach((link: any) => {
         link.target = '_blank';
       });
@@ -167,7 +180,7 @@ export const BotBubble = (props: Props) => {
         const imgInsideWrapper = wrapperDiv.querySelector('img');
         if (imgInsideWrapper) {
           imgInsideWrapper.onload = () => {
-            displayMintButtons(wrapperDiv); // Pass the wrapperDiv to displayMintButton
+            displayMintButtons(wrapperDiv, props);
           };
         }
       });
@@ -192,7 +205,7 @@ export const BotBubble = (props: Props) => {
     }
   });
 
-  function displayMintButtons(wrapper: any) {
+  function displayMintButtons(wrapper: any, props: Props) {
     const leftMintButtonContainer = document.createElement('div');
     leftMintButtonContainer.className = 'mint-button-container';
     leftMintButtonContainer.style.position = 'absolute';
@@ -202,6 +215,7 @@ export const BotBubble = (props: Props) => {
     const rightMintButtonContainer = document.createElement('div');
     rightMintButtonContainer.className = 'save-button-container';
     rightMintButtonContainer.style.position = 'absolute';
+    rightMintButtonContainer.style.bottom = '5px';
 
     const mintIconLeft = document.createElement('img');
     mintIconLeft.src = 'https://res.cloudinary.com/dwc808l7t/image/upload/v1713262197/game-launcher/some-mint-icon_rk0pma.svg';
@@ -215,7 +229,7 @@ export const BotBubble = (props: Props) => {
       mintButtonLeft.disabled = true;
       leftMintButtonContainer.classList.add('disabled');
 
-      onClickHandler(wrapper?.children[0].currentSrc || null);
+      onClickHandler(wrapper?.children[0].currentSrc || null, props.messageId);
 
       setTimeout(() => {
         mintButtonLeft.disabled = false;
@@ -223,22 +237,36 @@ export const BotBubble = (props: Props) => {
       }, 10000);
     };
 
-    const mintIconRight1 = document.createElement('img');
-    mintIconRight1.src = '/save-image.svg';
-    mintIconRight1.alt = 'save-icon';
+    const saveIcon = document.createElement('img');
+    saveIcon.className = 'mint-button';
+    saveIcon.src = imagedSaved() ? '/saved-image.svg' : '/save-image.svg';
+    saveIcon.alt = 'save-icon';
 
-    mintIconRight1.onclick = () => {
-      onSaveImageHandler(wrapper?.children[0].currentSrc || null);
+    const handleSaveClick = async () => {
+      const saveState = !imagedSaved();
+      setImagedSaved(saveState);
+      saveIcon.src = saveState ? '/saved-image.svg' : '/save-image.svg';
+
+      if (saveState) {
+        await onSaveImageHandler(wrapper?.children[0].currentSrc || null, props.messageId);
+      } else {
+        await onUnsaveImageHandler({ messageId: props.messageId, conversationId: props.chatId });
+      }
+
+      await updateConversationById({
+        conversationId: props.chatId,
+        saveImage: saveState,
+        messageId: props.messageId,
+        walletAddress: props.walletAddress,
+      });
     };
 
-    const mintButtonRight = document.createElement('button');
-    mintButtonRight.className = 'mint-button';
+    saveIcon.onclick = handleSaveClick;
+
+    rightMintButtonContainer.appendChild(saveIcon);
 
     leftMintButtonContainer.appendChild(mintIconLeft);
     leftMintButtonContainer.appendChild(mintButtonLeft);
-
-    rightMintButtonContainer.appendChild(mintIconRight1);
-    rightMintButtonContainer.appendChild(mintButtonRight);
 
     wrapper.style.position = 'relative';
     wrapper.appendChild(leftMintButtonContainer);
@@ -253,13 +281,12 @@ export const BotBubble = (props: Props) => {
       <Show when={true}>
         <>
           <Avatar initialAvatarSrc={'/ai-avatar.svg'} />
-          {props.message.type === 'apiMessage' &&
-            props.message.message === '' &&
-            props.loading() &&
-            props.index() === props.messages().length - 1 && <LoadingBubble />}
+          {props.role === 'assistant' && props.message === '' && props.loading() && props.index() === props.messages().length - 1 && (
+            <LoadingBubble />
+          )}
         </>
       </Show>
-      {props.message.message && (
+      {props.message && (
         <div style={{ position: 'relative', 'padding-left': '12px' }}>
           <p class="text-[16px] font-semibold">AImagine</p>
           <span
