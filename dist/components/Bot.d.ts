@@ -32,7 +32,6 @@ export type MessageType = {
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 export type BotProps = {
-    authToken: string;
     onMintHandler: any;
     onSaveHandler: any;
     onUnsaveImageHandler: any;
