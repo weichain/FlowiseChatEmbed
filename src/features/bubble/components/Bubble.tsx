@@ -56,6 +56,9 @@ export const Bubble = (props: BubbleProps) => {
       >
         <Show when={isBotStarted()}>
           <Bot
+            onUnsaveImageHandler={props.onUnsaveImageHandler}
+            chatId={props.chatId}
+            walletAddress={props.walletAddress}
             chatBotBEUrl={props.chatBotBEUrl}
             authToken={props.authToken}
             isMintButtonDisabled={props.isMintButtonDisabled}

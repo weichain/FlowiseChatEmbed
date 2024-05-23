@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 export const isNotDefined = <T>(value: T | undefined | null): value is undefined | null => value === undefined || value === null;
 
 export const isDefined = <T>(value: T | undefined | null): value is NonNullable<T> => value !== undefined && value !== null;
@@ -20,13 +22,14 @@ export const sendRequest = async <ResponseData>(
 ): Promise<{ data?: ResponseData; error?: Error }> => {
   try {
     const url = typeof params === 'string' ? params : params.url;
+    const authToken = Cookies.get('jwt');
     const response = await fetch(url, {
       method: typeof params === 'string' ? 'GET' : params.method,
       mode: 'cors',
       headers:
         typeof params !== 'string' && isDefined(params.body)
           ? {
-              Authorization: `Bearer ${params.authToken}`,
+              Authorization: `Bearer ${authToken}`,
             }
           : undefined,
       body: typeof params !== 'string' && isDefined(params.body) ? (params.body as FormData) : undefined,

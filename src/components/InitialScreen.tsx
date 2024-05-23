@@ -25,7 +25,7 @@ interface IPredefinedPromptsProps {
 
 export const InitialScreen = (props: IPredefinedPromptsProps) => {
   return (
-    <div class="lg:mt-8 md:mt-8 mt-44 flex w-full lg:h-screen md:h-screen lg:overflow-y-visible overflow-y-scroll flex-col items-center gap-4 lg:w-12/12">
+    <div class="mt-8 md:pr-4 flex w-full lg:h-screen md:h-screen lg:overflow-y-visible overflow-y-scroll flex-col items-center gap-4 lg:w-12/12">
       <img src="/stars.svg" width={70} height={70} alt="starts" />
       <p class="bg-gradient-to-r from-[#FF4646] via-[#FF7246] to-[#FECE00] bg-clip-text text-center text-[28px] font-bold text-transparent lg:text-[32px]">
         Hello! I&apos;m AImagine Creator Tool assistant.
@@ -56,7 +56,7 @@ function PredefinedPrompts(props: PredefinedPromptsProps) {
   return (
     <div
       onClick={() => props.onPredefinedPromptClick(props.label)}
-      class="relative flex lg:h-[209px] w-[170px] md:w-[308px] lg:w-[220px] cursor-pointer rounded-2xl bg-[#272727] p-4 hover:border hover:border-red-500"
+      class="relative flex lg:h-[209px] md:h-[185px] w-[170px] md:w-full lg:w-[220px] cursor-pointer rounded-2xl bg-[#272727] p-4 hover:border hover:border-red-500"
     >
       <p>{props.label}</p>
       <img class="absolute bottom-3 right-3" src={props.icon} width={30} height={30} alt="Prompt Image" />

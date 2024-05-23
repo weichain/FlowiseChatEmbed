@@ -64,12 +64,11 @@ export const updateFeedbackQuery = ({ id, apiHost = 'http://localhost:3000', bod
     body,
   });
 
-export const sendMessageQuery = ({ chatflowid, apiHost = 'interact-with-llm/', body, authToken, chatBotBEUrl }: MessageRequest) =>
+export const sendMessageQuery = ({ body, isConvNew, baseUrl }: any) =>
   sendRequest<any>({
     method: 'POST',
-    url: `${chatBotBEUrl}${apiHost}`,
+    url: `${baseUrl}api/v1/interact-with-llm?newConversation=${isConvNew}`,
     body,
-    authToken,
   });
 
 export const getChatbotConfig = ({ chatflowid, apiHost = 'http://localhost:3000' }: MessageRequest) =>

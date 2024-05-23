@@ -15,4 +15,9 @@ export const defaultBotProps: BubbleProps = {
   isMintButtonDisabled: false,
   authToken: '',
   chatBotBEUrl: '',
+  chatId: '',
+  walletAddress: '',
+  onUnsaveImageHandler: (input: string) => {
+    return input;
+  },
 };

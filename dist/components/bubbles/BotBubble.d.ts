@@ -1,7 +1,12 @@
 import { Accessor } from 'solid-js';
 import { MessageType } from '../Bot';
 type Props = {
-    message: MessageType;
+    message: any;
+    imagedSaved: boolean;
+    chatBotBEUrl: string;
+    walletAddress: string;
+    messageId: string;
+    role: string;
     chatflowid: string;
     chatId: string;
     apiHost?: string;
@@ -12,8 +17,9 @@ type Props = {
     textColor?: string;
     chatFeedbackStatus?: boolean;
     fontSize?: number;
-    onMintHandler: (input: string) => void;
-    onSaveHandler: (input: string) => void;
+    onMintHandler: any;
+    onSaveHandler: any;
+    onUnsaveImageHandler: any;
     isMintButtonDisabled: boolean;
     loading: Accessor<boolean>;
     index: Accessor<number>;

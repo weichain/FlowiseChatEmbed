@@ -49,7 +49,7 @@ export declare const updateFeedbackQuery: ({ id, apiHost, body }: UpdateFeedback
     data?: unknown;
     error?: Error | undefined;
 }>;
-export declare const sendMessageQuery: ({ chatflowid, apiHost, body, authToken, chatBotBEUrl }: MessageRequest) => Promise<{
+export declare const sendMessageQuery: ({ body, isConvNew, baseUrl }: any) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;
