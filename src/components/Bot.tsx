@@ -492,6 +492,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                           onUnsaveImageHandler={props.onUnsaveImageHandler}
                           chatBotBEUrl={props.chatBotBEUrl}
                           role={message.role}
+                          createdAt={message.createdAt}
                           walletAddress={props.walletAddress}
                           messageId={message._id}
                           imagedSaved={message.imageSaved}

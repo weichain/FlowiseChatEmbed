@@ -7,11 +7,13 @@ import { CopyToClipboardButton, ThumbsDownButton, ThumbsUpButton } from '../butt
 import FeedbackContentDialog from '../FeedbackContentDialog';
 import { LoadingBubble } from './LoadingBubble';
 import { updateConversationById } from '@/queries/conversations';
+import { isOneHourEarlier } from '@/utils';
 
 type Props = {
   message: any;
   imagedSaved: boolean;
   chatBotBEUrl: string;
+  createdAt: string;
   walletAddress: string;
   messageId: string;
   role: string;
@@ -170,21 +172,34 @@ export const BotBubble = (props: Props) => {
       botMessageEl.querySelectorAll('strong').forEach((strong: any) => {
         strong.className = 'text-white';
       });
-      botMessageEl.querySelectorAll('img').forEach((img: any) => {
-        const wrapperDiv = document.createElement('div');
-        wrapperDiv.className = 'image-wrapper';
+     botMessageEl.querySelectorAll('img').forEach((img: any) => {
+       const wrapperDiv = document.createElement('div');
+       wrapperDiv.className = 'image-wrapper';
 
-        wrapperDiv.appendChild(img.cloneNode(true));
+       wrapperDiv.appendChild(img.cloneNode(true));
 
-        img.parentNode.replaceChild(wrapperDiv, img);
+       const imgInsideWrapper = wrapperDiv.querySelector('img');
+       if (imgInsideWrapper) {
+         imgInsideWrapper.onload = () => {
+           displayMintButtons(wrapperDiv, props);
+         };
 
-        const imgInsideWrapper = wrapperDiv.querySelector('img');
-        if (imgInsideWrapper) {
-          imgInsideWrapper.onload = () => {
-            displayMintButtons(wrapperDiv, props);
-          };
-        }
-      });
+         if (isOneHourEarlier(props.createdAt)) {
+           wrapperDiv.style.display = 'flex'; // Set display to flex
+           wrapperDiv.style.alignItems = 'center'; // Align items vertically in the center
+
+           const outdatedText = document.createElement('p');
+           outdatedText.textContent = 'Image outdated';
+           outdatedText.className = 'text-[16px]'
+           outdatedText.style.marginLeft = '10px'; // Adjust spacing as needed
+           wrapperDiv.appendChild(outdatedText);
+         }
+       }
+
+       img.parentNode.replaceChild(wrapperDiv, img);
+     });
+
+
 
       if (props.fileAnnotations && props.fileAnnotations.length) {
         for (const annotations of props.fileAnnotations) {

@@ -4,6 +4,7 @@ type Props = {
     message: any;
     imagedSaved: boolean;
     chatBotBEUrl: string;
+    createdAt: string;
     walletAddress: string;
     messageId: string;
     role: string;
