@@ -13,4 +13,5 @@ export declare const sendRequest: <ResponseData>(params: {
     data?: ResponseData | undefined;
     error?: Error | undefined;
 }>;
+export declare function isOneHourEarlier(timeToCheck: string): boolean;
 //# sourceMappingURL=index.d.ts.map

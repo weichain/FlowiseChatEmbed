@@ -62,3 +62,14 @@ export const sendRequest = async <ResponseData>(
     return { error: e as Error };
   }
 };
+
+export function isOneHourEarlier(timeToCheck: string) {
+  const currentTime = new Date();
+
+  const timeToCheckParsed = new Date(timeToCheck);
+
+  const oneHourEarlier = new Date(currentTime);
+  oneHourEarlier.setHours(oneHourEarlier.getHours() - 1);
+
+  return timeToCheckParsed < oneHourEarlier;
+}
