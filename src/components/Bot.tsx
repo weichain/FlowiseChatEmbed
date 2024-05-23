@@ -155,7 +155,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         }
       } else {
         setShowInitialScreen(true);
-        setMessages([]);        
+        setMessages([]);
         localStorage.setItem(`${props.chatflowid}_EXTERNAL`, JSON.stringify({ chatId: props.chatId, chatHistory: [] }));
       }
     };
@@ -316,8 +316,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...messages];
         });
       }
-      if (!isChatFlowAvailableToStream())
-      {
+      if (!isChatFlowAvailableToStream()) {
         setConversationId(result.data.conversationId);
         updateLastMessage(question, result.data.messageId);
       } else {
@@ -345,7 +344,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   createEffect(() => {
     if (props.fontSize && botContainer) botContainer.style.fontSize = `${props.fontSize}px`;
   });
-
 
   const addRecordingToPreviews = (blob: Blob) => {
     const mimeType = blob.type.substring(0, blob.type.indexOf(';'));
