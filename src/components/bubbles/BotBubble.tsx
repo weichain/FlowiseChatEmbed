@@ -248,18 +248,9 @@ export const BotBubble = (props: Props) => {
       setImagedSaved(saveState);
       saveIcon.src = saveState ? '/saved-image.svg' : '/save-image.svg';
 
-      if (saveState)
-      {
-        console.log('here in the bot saving');
-        console.log('wrapper?.children[0].currentSrc', wrapper?.children[0].currentSrc);
-        console.log('props.messageId', props.messageId);
-        
+      if (saveState) {
         await onSaveImageHandler(wrapper?.children[0].currentSrc || null, props.messageId);
-      } else
-      {
-        console.log('here in the bot unsaving');
-        console.log({ messageId: props.messageId, conversationId: props.chatId });
-        
+      } else {
         await onUnsaveImageHandler({ messageId: props.messageId, conversationId: props.chatId });
       }
 
