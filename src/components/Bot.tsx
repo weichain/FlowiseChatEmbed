@@ -204,10 +204,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     scrollToBottom();
   };
 
-  const promptClick = (prompt: string) => {
-    handleSubmit(prompt);
-  };
-
   // Handle form submission
   const handleSubmit = async (value: string) => {
     setShowInitialScreen(false);
@@ -237,7 +233,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
 
     setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { content: value, role: 'user' }];
+      const newMessage: any = { content: value, role: 'user' };
+
+      if (urls && urls.length > 0) {
+        newMessage.fileUploaded = urls;
+      }
+
+      const messages: MessageType[] = [...prevMessages, newMessage];
       addChatMessage(messages);
       return messages;
     });
@@ -474,6 +476,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         <GuestBubble
                           messages={messages}
                           message={message.content}
+                          fileUploaded={message.fileUploaded}
                           apiHost={props.apiHost}
                           chatflowid={props.chatflowid}
                           chatId={props.chatId}
