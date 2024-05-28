@@ -44,7 +44,6 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             chatId={props.chatId}
             walletAddress={props.walletAddress}
             chatBotBEUrl={props.chatBotBEUrl}
-            authToken={props.authToken}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}
             onSaveHandler={props.onSaveHandler}
