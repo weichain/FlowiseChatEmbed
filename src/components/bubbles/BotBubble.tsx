@@ -183,17 +183,6 @@ export const BotBubble = (props: Props) => {
           imgInsideWrapper.onload = () => {
             displayMintButtons(wrapperDiv, props);
           };
-
-          if (isOneHourEarlier(props.createdAt)) {
-            wrapperDiv.style.display = 'flex'; // Set display to flex
-            wrapperDiv.style.alignItems = 'center'; // Align items vertically in the center
-
-            const outdatedText = document.createElement('p');
-            outdatedText.textContent = 'Image outdated';
-            outdatedText.className = 'text-[16px]';
-            outdatedText.style.marginLeft = '10px'; // Adjust spacing as needed
-            wrapperDiv.appendChild(outdatedText);
-          }
         }
 
         img.parentNode.replaceChild(wrapperDiv, img);
