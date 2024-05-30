@@ -16,7 +16,6 @@ type Props = {
     avatarSrc?: string;
     backgroundColor?: string;
     textColor?: string;
-    chatFeedbackStatus?: boolean;
     fontSize?: number;
     onMintHandler: any;
     onSaveHandler: any;

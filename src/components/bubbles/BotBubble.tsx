@@ -1,10 +1,8 @@
 import { Accessor, Show, createSignal, onMount } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
-import { FeedbackRatingType, sendFeedbackQuery, sendFileDownloadQuery, updateFeedbackQuery } from '@/queries/sendMessageQuery';
+import { sendFileDownloadQuery } from '@/queries/sendMessageQuery';
 import { MessageType } from '../Bot';
-import { CopyToClipboardButton, ThumbsDownButton, ThumbsUpButton } from '../buttons/FeedbackButtons';
-import FeedbackContentDialog from '../FeedbackContentDialog';
 import { LoadingBubble } from './LoadingBubble';
 import { updateConversationById } from '@/queries/conversations';
 import { isOneHourEarlier } from '@/utils';
@@ -25,7 +23,6 @@ type Props = {
   avatarSrc?: string;
   backgroundColor?: string;
   textColor?: string;
-  chatFeedbackStatus?: boolean;
   fontSize?: number;
   onMintHandler: any;
   onSaveHandler: any;
@@ -36,17 +33,12 @@ type Props = {
   messages: Accessor<MessageType[]>;
 };
 
-const defaultBackgroundColor = '#f7f8ff';
-const defaultTextColor = '#303235';
 const defaultFontSize = 16;
 
 Marked.setOptions({ isNoP: true });
 
 export const BotBubble = (props: Props) => {
   let botMessageEl: any;
-  const [rating, setRating] = createSignal('');
-  const [feedbackId, setFeedbackId] = createSignal('');
-  const [showFeedbackContentDialog, setShowFeedbackContentModal] = createSignal(false);
   const [imagedSaved, setImagedSaved] = createSignal(props.imagedSaved);
 
   const downloadFile = async (fileAnnotation: any) => {
@@ -68,67 +60,6 @@ export const BotBubble = (props: Props) => {
     }
   };
 
-  const copyMessageToClipboard = async () => {
-    try {
-      const text = botMessageEl ? botMessageEl?.textContent : '';
-      await navigator.clipboard.writeText(text || '');
-    } catch (error) {
-      console.error('Error copying to clipboard:', error);
-    }
-  };
-
-  const onThumbsUpClick = async () => {
-    if (rating() === '') {
-      const body = {
-        chatflowid: props.chatflowid,
-        chatId: props.chatId,
-        messageId: props.message?.messageId as string,
-        rating: 'THUMBS_UP' as FeedbackRatingType,
-        content: '',
-      };
-      const result = await sendFeedbackQuery({
-        chatflowid: props.chatflowid,
-        apiHost: props.apiHost,
-        body,
-      });
-
-      if (result.data) {
-        const data = result.data as any;
-        let id = '';
-        if (data && data.id) id = data.id;
-        setRating('THUMBS_UP');
-        setFeedbackId(id);
-        setShowFeedbackContentModal(true);
-      }
-    }
-  };
-
-  const onThumbsDownClick = async () => {
-    if (rating() === '') {
-      const body = {
-        chatflowid: props.chatflowid,
-        chatId: props.chatId,
-        messageId: props.message?.messageId as string,
-        rating: 'THUMBS_DOWN' as FeedbackRatingType,
-        content: '',
-      };
-      const result = await sendFeedbackQuery({
-        chatflowid: props.chatflowid,
-        apiHost: props.apiHost,
-        body,
-      });
-
-      if (result.data) {
-        const data = result.data as any;
-        let id = '';
-        if (data && data.id) id = data.id;
-        setRating('THUMBS_DOWN');
-        setFeedbackId(id);
-        setShowFeedbackContentModal(true);
-      }
-    }
-  };
-
   const onClickHandler = async (text: any, messageId: string) => {
     if (props.onMintHandler) {
       return props.onMintHandler(text, messageId);
@@ -144,22 +75,6 @@ export const BotBubble = (props: Props) => {
   const onUnsaveImageHandler = async ({ messageId, conversationId }: { messageId: string; conversationId: string }) => {
     if (props.onSaveHandler) {
       return props.onUnsaveImageHandler({ messageId, conversationId });
-    }
-  };
-
-  const submitFeedbackContent = async (text: string) => {
-    const body = {
-      content: text,
-    };
-    const result = await updateFeedbackQuery({
-      id: feedbackId(),
-      apiHost: props.apiHost,
-      body,
-    });
-
-    if (result.data) {
-      setFeedbackId('');
-      setShowFeedbackContentModal(false);
     }
   };
 
@@ -183,17 +98,6 @@ export const BotBubble = (props: Props) => {
           imgInsideWrapper.onload = () => {
             displayMintButtons(wrapperDiv, props);
           };
-
-          if (isOneHourEarlier(props.createdAt)) {
-            wrapperDiv.style.display = 'flex'; // Set display to flex
-            wrapperDiv.style.alignItems = 'center'; // Align items vertically in the center
-
-            const outdatedText = document.createElement('p');
-            outdatedText.textContent = 'Image outdated';
-            outdatedText.className = 'text-[16px]';
-            outdatedText.style.marginLeft = '10px'; // Adjust spacing as needed
-            wrapperDiv.appendChild(outdatedText);
-          }
         }
 
         img.parentNode.replaceChild(wrapperDiv, img);
@@ -261,9 +165,10 @@ export const BotBubble = (props: Props) => {
       setImagedSaved(saveState);
       saveIcon.src = saveState ? '/saved-image.svg' : '/save-image.svg';
 
-      if (saveState) {
+      if (saveState) { 
         await onSaveImageHandler(wrapper?.children[0].currentSrc || null, props.messageId);
-      } else {
+      } else
+      {
         await onUnsaveImageHandler({ messageId: props.messageId, conversationId: props.chatId });
       }
 
@@ -317,28 +222,6 @@ export const BotBubble = (props: Props) => {
             }}
           />
         </div>
-      )}
-      {props.chatFeedbackStatus && props.message.messageId && (
-        <>
-          <div class="flex items-center px-2">
-            <CopyToClipboardButton onClick={() => copyMessageToClipboard()} />
-            {rating() === '' || rating() === 'THUMBS_UP' ? (
-              <ThumbsUpButton isDisabled={rating() === 'THUMBS_UP'} rating={rating()} onClick={onThumbsUpClick} />
-            ) : null}
-            {rating() === '' || rating() === 'THUMBS_DOWN' ? (
-              <ThumbsDownButton isDisabled={rating() === 'THUMBS_DOWN'} rating={rating()} onClick={onThumbsDownClick} />
-            ) : null}
-          </div>
-          <Show when={showFeedbackContentDialog()}>
-            <FeedbackContentDialog
-              isOpen={showFeedbackContentDialog()}
-              onClose={() => setShowFeedbackContentModal(false)}
-              onSubmit={submitFeedbackContent}
-              backgroundColor={props.backgroundColor}
-              textColor={props.textColor}
-            />
-          </Show>
-        </>
       )}
     </div>
   );

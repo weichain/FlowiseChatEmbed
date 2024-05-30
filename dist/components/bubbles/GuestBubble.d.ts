@@ -9,7 +9,7 @@ type Props = {
     backgroundColor?: string;
     textColor?: string;
     fontSize?: number;
-    fileUploaded: any[];
+    userUploadedImageUrl: any;
 };
 export declare const GuestBubble: (props: Props) => import("solid-js").JSX.Element;
 export {};

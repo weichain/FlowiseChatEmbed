@@ -19,7 +19,7 @@ type FilePreview = {
     preview: string;
     type: string;
 };
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting';
+type messageType = 'assistant' | 'user';
 export type FileUpload = Omit<FilePreview, 'preview'>;
 export type MessageType = {
     messageId?: string;

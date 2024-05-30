@@ -13,7 +13,7 @@ type Props = {
   backgroundColor?: string;
   textColor?: string;
   fontSize?: number;
-  fileUploaded: any[];
+  userUploadedImageUrl: any;
 };
 
 const defaultTextColor = '#ffffff';
@@ -25,7 +25,8 @@ export const GuestBubble = (props: Props) => {
   let userMessageEl: HTMLDivElement | undefined;
 
   onMount(() => {
-    if (userMessageEl) {
+    if (userMessageEl)
+    {      
       const parsedMessage = Marked.parse(props.message);
       userMessageEl.innerHTML = parsedMessage;
       styleLinksInElement(userMessageEl);
@@ -52,9 +53,9 @@ export const GuestBubble = (props: Props) => {
           'border-radius': '6px',
         }}
       >
+        <p class="text-[16px] font-semibold">You</p>
         {props.message && (
           <>
-            <p class="text-[16px] font-semibold">You</p>
             <div
               ref={userMessageEl}
               class="mr-2 whitespace-pre-wrap"
@@ -64,19 +65,11 @@ export const GuestBubble = (props: Props) => {
             />
           </>
         )}
-        {props.fileUploaded && props.fileUploaded.length > 0 && (
+        {props.userUploadedImageUrl && (
           <div class="flex flex-col items-start flex-wrap w-full gap-2">
-            <For each={props.fileUploaded}>
-              {(item) => {
-                const fileData = `${props.apiHost}/api/v1/get-upload-file?chatflowId=${props.chatflowid}&chatId=${props.chatId}&fileName=${item.name}`;
-                const src = (item.data as string) ?? fileData;
-                return (
-                  <div class="flex items-center justify-center max-w-[128px] mr-[10px] p-0 m-0">
-                    <img class="w-full rounded-md h-full bg-cover" src={src} />
-                  </div>
-                );
-              }}
-            </For>
+            <div class="flex items-center justify-center max-w-[128px] mr-[10px] p-0 m-0">
+              <img class="w-full rounded-md h-full bg-cover" src={props.userUploadedImageUrl} />
+            </div>
           </div>
         )}
       </div>

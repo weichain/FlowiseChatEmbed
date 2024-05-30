@@ -27,15 +27,16 @@ const defaultTextColor = '#303235';
 
 export const TextInput = (props: Props) => {
   const [inputValue, setInputValue] = createSignal(props.defaultValue ?? '');
+  const [filesUploaded, setFilesUploaded] = createSignal(false); // State variable to track file uploads
   let inputRef: HTMLInputElement | HTMLTextAreaElement | undefined;
   let fileUploadRef: HTMLInputElement | HTMLTextAreaElement | undefined;
 
   const handleInput = (inputValue: string) => setInputValue(inputValue);
 
-  const checkIfInputIsValid = () => inputValue() !== '' && inputRef?.reportValidity();
+  const isSendButtonDisabled = () => props.disabled || (inputValue() === '' && !filesUploaded());
 
   const submit = () => {
-    if (checkIfInputIsValid()) props.onSubmit(inputValue());
+    props.onSubmit(inputValue());
     setInputValue('');
   };
 
@@ -59,8 +60,10 @@ export const TextInput = (props: Props) => {
 
   const handleFileChange = (event: FileEvent<HTMLInputElement>) => {
     props.handleFileChange(event);
-    // 👇️ reset file input
-    if (event.target) event.target.value = '';
+    setFilesUploaded(true);
+    if (event.target) {
+      event.target.value = '';
+    }
   };
 
   return (
@@ -95,13 +98,7 @@ export const TextInput = (props: Props) => {
       <ImageUploadButton buttonColor={props.sendButtonColor} type="button" class="m-0" on:click={handleImageUploadClick}>
         <span style={{ 'font-family': 'Poppins, sans-serif' }}>Image Upload</span>
       </ImageUploadButton>
-      <SendButton
-        sendButtonColor={props.sendButtonColor}
-        type="button"
-        isDisabled={props.disabled || inputValue() === ''}
-        class="m-0"
-        on:click={submit}
-      >
+      <SendButton sendButtonColor={props.sendButtonColor} type="button" isDisabled={isSendButtonDisabled()} class="m-0" on:click={submit}>
         <span style={{ 'font-family': 'Poppins, sans-serif' }}>Send</span>
       </SendButton>
     </div>
