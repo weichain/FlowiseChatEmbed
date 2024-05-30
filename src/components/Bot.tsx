@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { createSignal, createEffect, For, onMount, Show, mergeProps, createMemo } from 'solid-js';
+import { createSignal, createEffect, For, Show, mergeProps } from 'solid-js';
 import { sendMessageQuery } from '@/queries/sendMessageQuery';
 import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
@@ -39,7 +39,7 @@ type FilePreview = {
   type: string;
 };
 
-type messageType = 'apiMessage' | 'userMessage' | 'usermessagewaiting';
+type messageType = 'assistant' | 'user';
 
 export type FileUpload = Omit<FilePreview, 'preview'>;
 
@@ -91,15 +91,12 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   // set a default value for showTitle if not set and merge with other props
   const props = mergeProps({ showTitle: true }, botProps);
   let chatContainer: HTMLDivElement | undefined;
-  let bottomSpacer: HTMLDivElement | undefined;
   let botContainer: HTMLDivElement | undefined;
 
   const [userInput, setUserInput] = createSignal('');
 
   const [loading, setLoading] = createSignal(false);
   const [messages, setMessages] = createSignal<any>([]);
-  const [isChatFlowAvailableToStream, setIsChatFlowAvailableToStream] = createSignal(false);
-  const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
   const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
   const [showInitialScreen, setShowInitialScreen] = createSignal<boolean>(false);
   const [fileToUpload, setFileToUpload] = createSignal<any>();
@@ -113,32 +110,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isRecording, setIsRecording] = createSignal(false);
   const [recordingNotSupported, setRecordingNotSupported] = createSignal(false);
   const [isLoadingRecording, setIsLoadingRecording] = createSignal(false);
-
-  onMount(() => {
-    if (botProps?.observersConfig) {
-      const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
-      typeof observeUserInput === 'function' &&
-        // eslint-disable-next-line solid/reactivity
-        createMemo(() => {
-          observeUserInput(userInput());
-        });
-      typeof observeLoading === 'function' &&
-        // eslint-disable-next-line solid/reactivity
-        createMemo(() => {
-          observeLoading(loading());
-        });
-      typeof observeMessages === 'function' &&
-        // eslint-disable-next-line solid/reactivity
-        createMemo(() => {
-          observeMessages(messages());
-        });
-    }
-
-    if (!bottomSpacer) return;
-    setTimeout(() => {
-      chatContainer?.scrollTo(0, chatContainer.scrollHeight);
-    }, 50);
-  });
 
   createEffect(() => {
     const fetchChats = async () => {
@@ -186,8 +157,18 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return [...updated];
     });
   };
+
+  const updateUserMessageWithImageUrl = (prevMessages: any[], imageUrl: string) => {
+    return prevMessages.map((item: any, i: any) => {
+      if (i === prevMessages.length - 2 && item.role === 'user') {
+        // Check length - 2 for the user message
+        return { ...item, userUploadedImageUrl: imageUrl };
+      }
+      return item;
+    });
+  };
+
   const clearPreviews = () => {
-    // Revoke the data uris to avoid memory leaks
     previews().forEach((file) => URL.revokeObjectURL(file.preview));
     setPreviews([]);
   };
@@ -195,7 +176,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   // Handle errors
   const handleError = (message = 'Oops! There seems to be an error. Please try again.') => {
     setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { message, type: 'apiMessage' }];
+      const messages: MessageType[] = [...prevMessages, { message, type: 'assistant' }];
       addChatMessage(messages);
       return messages;
     });
@@ -204,21 +185,17 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     scrollToBottom();
   };
 
-  const promptClick = (prompt: string) => {
-    handleSubmit(prompt);
-  };
-
   // Handle form submission
   const handleSubmit = async (value: string) => {
     setShowInitialScreen(false);
     setUserInput(value);
 
-    if (value.trim() === '') {
-      const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
-      if (!(previews().length >= 1 && containsAudio)) {
-        return;
-      }
-    }
+    // if (value.trim() === '') {
+    //   const containsAudio = previews().filter((item) => item.type === 'audio').length > 0;
+    //   if (!(previews().length >= 1 && containsAudio)) {
+    //     return;
+    //   }
+    // }
 
     setLoading(true);
     scrollToBottom();
@@ -237,31 +214,44 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
 
     setMessages((prevMessages) => {
-      const messages: MessageType[] = [...prevMessages, { content: value, role: 'user' }];
+      const newMessage: any = { content: value, role: 'user' };
+
+      if (urls && urls.length > 0) {
+        newMessage.userUploadedImageUrl = urls[0].data;
+      }
+
+      const messages: MessageType[] = [...prevMessages, newMessage];
       addChatMessage(messages);
+
       return messages;
     });
 
     let body;
     const formData = new FormData();
 
-    formData.append('text', value);
+    if (value !== undefined) {
+      formData.append('text', value);
+    }
 
-    if (fileToUpload()) {
-      const data = fileToUpload();
-      data.append('text', value);
-      if (props.chatId) {
-        data.append('convId', props.chatId);
+    const fileData = fileToUpload();
+
+    if (fileData) {
+      if (value !== undefined) {
+        fileData.append('text', value);
       }
-      body = data;
+      const chatId = props.chatId || conversationId();
+      if (chatId) {
+        fileData.append('convId', chatId);
+      }
+      body = fileData;
       setFileToUpload(null);
     } else {
-      if (props.chatId) {
-        formData.append('convId', props.chatId);
+      const chatId = props.chatId || conversationId();
+      if (chatId) {
+        formData.append('convId', chatId);
       }
       body = formData;
     }
-
     clearPreviews();
 
     setMessages((prevMessages) => [...prevMessages, { content: '', role: 'assistant' }]);
@@ -269,59 +259,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendMessageQuery({
       body,
       baseUrl: props.chatBotBEUrl,
-      isConvNew: props.chatId ? false : true,
+      isConvNew: props.chatId || conversationId() ? false : true,
     });
-
-    if (result.data?.image_html) {
-      const image = result.data?.image_html;
-      updateLastMessage(image);
-      setUserInput('');
-      setLoading(false);
-      scrollToBottom();
-    }
 
     if (result.data?.data) {
       const data = result.data.data;
-
       const question = data;
 
-      if (value === '' && question) {
-        setMessages((data) => {
-          const messages = data.map((item: any, i: any) => {
-            if (i === data.length - 2) {
-              return { ...item, message: question };
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
+      setConversationId(result.data.conversationId);
+      window.history.replaceState(null, '', `${window.location.pathname}?chatId=${result.data.conversationId}`);
+      updateLastMessage(question, result.data.messageId);
+      if (result.data.userUploadedImageUrl) {
+        const updatedMessages = updateUserMessageWithImageUrl(messages(), result.data.userUploadedImageUrl);
+        setMessages(updatedMessages);
+        addChatMessage(updatedMessages);
       }
-      if (urls && urls.length > 0) {
-        setMessages((data) => {
-          const messages = data.map((item: any, i: any) => {
-            if (i === data.length - 2) {
-              if (item.fileUploads) {
-                const fileUploads = item?.fileUploads.map((file: any) => ({
-                  type: file.type,
-                  name: file.name,
-                  mime: file.mime,
-                }));
-                return { ...item, fileUploads };
-              }
-            }
-            return item;
-          });
-          addChatMessage(messages);
-          return [...messages];
-        });
-      }
-      if (!isChatFlowAvailableToStream()) {
-        setConversationId(result.data.conversationId);
-        updateLastMessage(question, result.data.messageId);
-      } else {
-        updateLastMessage(question);
-      }
+
       setLoading(false);
       setUserInput('');
       scrollToBottom();
@@ -336,7 +289,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     }
   };
 
-  // Auto scroll chat to bottom
   createEffect(() => {
     if (messages()) scrollToBottom();
   });
@@ -474,6 +426,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         <GuestBubble
                           messages={messages}
                           message={message.content}
+                          userUploadedImageUrl={message.userUploadedImageUrl}
                           apiHost={props.apiHost}
                           chatflowid={props.chatflowid}
                           chatId={props.chatId}
@@ -508,7 +461,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                           textColor={props.botMessage?.textColor}
                           showAvatar={props.botMessage?.showAvatar}
                           avatarSrc={props.botMessage?.avatarSrc}
-                          chatFeedbackStatus={chatFeedbackStatus()}
                           fontSize={props.fontSize}
                         />
                       )}
