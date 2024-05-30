@@ -100,7 +100,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
   const [showInitialScreen, setShowInitialScreen] = createSignal<boolean>(false);
   const [fileToUpload, setFileToUpload] = createSignal<any>();
-  const [conversationId, setConversationId] = createSignal<string>();
 
   // drag & drop file input
   const [previews, setPreviews] = createSignal<FilePreview[]>([]);
@@ -239,16 +238,15 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       if (value !== undefined) {
         fileData.append('text', value);
       }
-      const chatId = props.chatId || conversationId();
-      if (chatId) {
-        fileData.append('convId', chatId);
+
+      if (props.chatId) {
+        fileData.append('convId', props.chatId);
       }
       body = fileData;
       setFileToUpload(null);
     } else {
-      const chatId = props.chatId || conversationId();
-      if (chatId) {
-        formData.append('convId', chatId);
+      if (props.chatId) {
+        formData.append('convId', props.chatId);
       }
       body = formData;
     }
@@ -259,14 +257,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const result = await sendMessageQuery({
       body,
       baseUrl: props.chatBotBEUrl,
-      isConvNew: props.chatId || conversationId() ? false : true,
+      isConvNew: props.chatId ? false : true,
     });
 
     if (result.data?.data) {
       const data = result.data.data;
       const question = data;
 
-      setConversationId(result.data.conversationId);
       window.history.replaceState(null, '', `${window.location.pathname}?chatId=${result.data.conversationId}`);
       updateLastMessage(question, result.data.messageId);
       if (result.data.userUploadedImageUrl) {
@@ -455,7 +452,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                           message={message.content}
                           fileAnnotations={message.fileAnnotations}
                           chatflowid={props.chatflowid}
-                          chatId={props.chatId || conversationId() || ''}
+                          chatId={props.chatId}
                           apiHost={props.apiHost}
                           backgroundColor={props.botMessage?.backgroundColor}
                           textColor={props.botMessage?.textColor}
