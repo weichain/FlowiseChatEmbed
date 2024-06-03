@@ -5,10 +5,11 @@ import { sendFileDownloadQuery } from '@/queries/sendMessageQuery';
 import { MessageType } from '../Bot';
 import { LoadingBubble } from './LoadingBubble';
 import { updateConversationById } from '@/queries/conversations';
-import { isOneHourEarlier } from '@/utils';
+import { deleteImageByMessageId, saveImage } from '@/queries/generated-images';
 
 type Props = {
   message: any;
+  baseUrl: string;
   imagedSaved: boolean;
   chatBotBEUrl: string;
   createdAt: string;
@@ -25,8 +26,6 @@ type Props = {
   textColor?: string;
   fontSize?: number;
   onMintHandler: any;
-  onSaveHandler: any;
-  onUnsaveImageHandler: any;
   isMintButtonDisabled: boolean;
   loading: Accessor<boolean>;
   index: Accessor<number>;
@@ -67,14 +66,20 @@ export const BotBubble = (props: Props) => {
   };
 
   const onSaveImageHandler = async (text: any, messageId: string) => {
-    if (props.onSaveHandler) {
-      return props.onSaveHandler(text, messageId);
+    try {
+      await saveImage({ baseUrl: props.baseUrl, imageUrl: text, messageId });
+      setImagedSaved(true);
+    } catch (error) {
+      console.error('Save image failed:', error);
     }
   };
 
   const onUnsaveImageHandler = async ({ messageId, conversationId }: { messageId: string; conversationId: string }) => {
-    if (props.onSaveHandler) {
-      return props.onUnsaveImageHandler({ messageId, conversationId });
+    try {
+      await deleteImageByMessageId({ baseUrl: props.baseUrl, messageId, conversationId });
+      setImagedSaved(false);
+    } catch (error) {
+      console.error('Unsave image failed:', error);
     }
   };
 
@@ -165,10 +170,9 @@ export const BotBubble = (props: Props) => {
       setImagedSaved(saveState);
       saveIcon.src = saveState ? '/saved-image.svg' : '/save-image.svg';
 
-      if (saveState) { 
+      if (saveState) {
         await onSaveImageHandler(wrapper?.children[0].currentSrc || null, props.messageId);
-      } else
-      {
+      } else {
         await onUnsaveImageHandler({ messageId: props.messageId, conversationId: props.chatId });
       }
 
@@ -195,8 +199,7 @@ export const BotBubble = (props: Props) => {
 
   return (
     <div
-      class="flex flex-row justify-start mb-2 bg-[#272727] p-4 rounded-xl host-container"
-      style={{ 'margin-right': '20px', 'align-items': 'start' }}
+      class="flex flex-row items-start lg:mr-5 md:mr-5 justify-start mb-2 bg-[#272727] p-4 rounded-xl host-container"
     >
       <Show when={true}>
         <>

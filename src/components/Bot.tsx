@@ -57,8 +57,6 @@ export type observersConfigType = Record<'observeUserInput' | 'observeLoading' |
 
 export type BotProps = {
   onMintHandler: any;
-  onSaveHandler: any;
-  onUnsaveImageHandler: any;
   isMintButtonDisabled: boolean;
   walletAddress: string;
   chatflowid: string;
@@ -84,7 +82,7 @@ export type BotProps = {
 
 const defaultWelcomeMessage = 'Hi there! How can I help?';
 
-const defaultBackgroundColor = '#ffffff';
+const defaultBackgroundColor = '#363636';
 const defaultTextColor = '#303235';
 
 export const Bot = (botProps: BotProps & { class?: string }) => {
@@ -382,7 +380,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   return (
     <>
       {showInitialScreen() ? (
-        <div class="flex w-full h-screen chatbot-container flex-col items-center gap-4">
+        <div class="flex w-full h-screen chatbot-container flex-col items-center gap-4 pb-2">
           <InitialScreen onPredefinedPromptClick={onPredefinedPromptClick} />
           <div class="lg:absolute lg:bottom-3 lg:m-auto px-2 pb-1 w-full lg:w-6/12">
             <TextInput
@@ -408,9 +406,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ) : (
         <div
           ref={botContainer}
-          class={'relative flex w-full h-full pb-2 max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
+          class={'relative flex w-full h-fit pb-2 max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
         >
-          <div class="flex flex-col w-full h-full justify-start z-0 chatbot-container">
+          <div class="flex flex-col w-full h-full justify-start z-0 pb-2 chatbot-container">
             <div
               ref={chatContainer}
               class="overflow-y-scroll overflow-x-hidden flex flex-col flex-grow min-w-full w-full px-3 lg:mt-[30px] md:mt-[30px] relative scrollable-container chatbot-chat-view scroll-smooth"
@@ -436,14 +434,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       )}
                       {message.role === 'assistant' && (
                         <BotBubble
-                          onUnsaveImageHandler={props.onUnsaveImageHandler}
+                          baseUrl={props.chatBotBEUrl}
                           chatBotBEUrl={props.chatBotBEUrl}
                           role={message.role}
                           createdAt={message.createdAt}
                           walletAddress={props.walletAddress}
                           messageId={message._id}
                           imagedSaved={message.imageSaved}
-                          onSaveHandler={props.onSaveHandler}
                           loading={loading}
                           index={index}
                           messages={messages}
@@ -467,7 +464,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 }}
               </For>
             </div>
-            <div class="w-full pr-7 pl-3 lg:pr-7">
+            <div class="w-full pr-[11px] md:pr-7 pl-3 lg:pr-7">
               {isRecording() ? (
                 <>
                   {recordingNotSupported() ? (

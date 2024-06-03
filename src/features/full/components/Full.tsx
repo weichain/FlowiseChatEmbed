@@ -40,13 +40,11 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
           }}
         >
           <Bot
-            onUnsaveImageHandler={props.onUnsaveImageHandler}
             chatId={props.chatId}
             walletAddress={props.walletAddress}
             chatBotBEUrl={props.chatBotBEUrl}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}
-            onSaveHandler={props.onSaveHandler}
             badgeBackgroundColor={props.theme?.chatWindow?.backgroundColor}
             bubbleBackgroundColor={props.theme?.button?.backgroundColor ?? defaultButtonColor}
             bubbleTextColor={props.theme?.button?.iconColor ?? defaultIconColor}

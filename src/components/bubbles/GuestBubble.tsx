@@ -25,8 +25,7 @@ export const GuestBubble = (props: Props) => {
   let userMessageEl: HTMLDivElement | undefined;
 
   onMount(() => {
-    if (userMessageEl)
-    {      
+    if (userMessageEl) {
       const parsedMessage = Marked.parse(props.message);
       userMessageEl.innerHTML = parsedMessage;
       styleLinksInElement(userMessageEl);
@@ -41,7 +40,7 @@ export const GuestBubble = (props: Props) => {
   };
 
   return (
-    <div class="flex p-4 mb-6 mt-6 guest-container">
+    <div class="flex p-4 mb-6 lg:mt-6 md:mt-6 mt-0">
       <Show when={props.showAvatar}>
         <Avatar initialAvatarSrc={'/drop-down-icon.svg'} />
       </Show>
