@@ -56,13 +56,11 @@ export const Bubble = (props: BubbleProps) => {
       >
         <Show when={isBotStarted()}>
           <Bot
-            onUnsaveImageHandler={props.onUnsaveImageHandler}
             chatId={props.chatId}
             walletAddress={props.walletAddress}
             chatBotBEUrl={props.chatBotBEUrl}
             isMintButtonDisabled={props.isMintButtonDisabled}
             onMintHandler={props.onMintHandler}
-            onSaveHandler={props.onSaveHandler}
             badgeBackgroundColor={bubbleProps.theme?.chatWindow?.backgroundColor}
             bubbleBackgroundColor={bubbleProps.theme?.button?.backgroundColor ?? defaultButtonColor}
             bubbleTextColor={bubbleProps.theme?.button?.iconColor ?? defaultIconColor}

@@ -2,6 +2,7 @@ import { Accessor } from 'solid-js';
 import { MessageType } from '../Bot';
 type Props = {
     message: any;
+    baseUrl: string;
     imagedSaved: boolean;
     chatBotBEUrl: string;
     createdAt: string;
@@ -18,8 +19,6 @@ type Props = {
     textColor?: string;
     fontSize?: number;
     onMintHandler: any;
-    onSaveHandler: any;
-    onUnsaveImageHandler: any;
     isMintButtonDisabled: boolean;
     loading: Accessor<boolean>;
     index: Accessor<number>;

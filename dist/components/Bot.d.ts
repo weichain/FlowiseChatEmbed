@@ -33,8 +33,6 @@ type observerConfigType = (accessor: string | boolean | object | MessageType[]) 
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 export type BotProps = {
     onMintHandler: any;
-    onSaveHandler: any;
-    onUnsaveImageHandler: any;
     isMintButtonDisabled: boolean;
     walletAddress: string;
     chatflowid: string;
