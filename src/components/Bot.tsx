@@ -406,7 +406,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       ) : (
         <div
           ref={botContainer}
-          class={'relative flex w-full h-fit pb-2 max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
+          class={'relative flex w-full h-full pb-2 max-w-5xl text-base overflow-hidden bg-cover bg-center flex-col items-center ' + props.class}
         >
           <div class="flex flex-col w-full h-full justify-start z-0 pb-2 chatbot-container">
             <div
